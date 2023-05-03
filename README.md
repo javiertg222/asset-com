@@ -4,6 +4,7 @@
 [![](https://skills.thijs.gg/icons?i=js,html,css,nodejs,react)](https://skills.thijs.gg)
 
 ### Licencia
+
 ![Bower](https://img.shields.io/bower/l/mi)
 
 ### Versiones
