@@ -1,0 +1,21 @@
+{
+  "short_name": "Assetcom",
+  "name": "Assetcom React App",
+  "description": "Aplicación proyecto fin de ciclo Daw",
+  "icons": [
+    {
+      "src": "favicon.png",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#0d6efd",
+  "background_color": "#ffffff",
+  "prefer-related-applications": true,
+  "related_applications": [{
+    "platform": "webapp",
+    "url": "https://github.com/javiertg222/asset-com.git"
+  }]
+}
