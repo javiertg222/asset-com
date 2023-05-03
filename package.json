@@ -1,0 +1,31 @@
+{
+  "name": "asset-com",
+  "version": "1.0.0",
+  "description": "Proyecto Daw 2023",
+  "main": "server.js",
+  
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "start-server": "nodemon --exec node server.js",
+    "start-front": "cd frontend/ && npm start",
+    "go": "npm run start-server && npm run start-front"
+  },
+  "keywords": ["proyecto", "daw"],
+  "author": "Javier",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv-defaults": "^5.0.2",
+    "express": "^4.18.2",
+    "express-validator": "^7.0.1",
+    "jsonwebtoken": "^9.0.0",
+    "moment": "^2.29.4",
+    "multer": "^1.4.5-lts.1",
+    "bcryptjs": "^2.4.3",
+    "sqlite3": "^5.1.6"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.21"
+  }
+}
