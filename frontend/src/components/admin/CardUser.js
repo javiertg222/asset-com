@@ -18,13 +18,13 @@ function CardUser(props) {
         <Modal.Body>
           <Card bg="primary" style={{ width: "18rem" }}>
             <ListGroup variant="flush">
-            <ListGroup.Item><b>FOTO:</b> {props.user.id_user}</ListGroup.Item>
-              <ListGroup.Item><b>ID:</b> {props.user.id_user}</ListGroup.Item>
-              <ListGroup.Item><b>NOMBRE:</b> {props.user.name_user}</ListGroup.Item>
-              <ListGroup.Item><b>APELLIDO:</b> {props.user.nickname_user}</ListGroup.Item>
-              <ListGroup.Item><b>APODO:</b> {props.user.nickname_user}</ListGroup.Item>
-              <ListGroup.Item><b>EMAIL:</b> {props.user.email_user}</ListGroup.Item>
-              <ListGroup.Item><b>ROL:</b> {props.user.name_rol}</ListGroup.Item>
+            <ListGroup.Item><b>FOTO:</b> {props.user.foto}</ListGroup.Item>
+              <ListGroup.Item><b>ID:</b> {props.user.id}</ListGroup.Item>
+              <ListGroup.Item><b>NOMBRE:</b> {props.user.nombre}</ListGroup.Item>
+              <ListGroup.Item><b>APELLIDO:</b> {props.user.apellido}</ListGroup.Item>
+              <ListGroup.Item><b>APODO:</b> {props.user.apodo}</ListGroup.Item>
+              <ListGroup.Item><b>EMAIL:</b> {props.user.email}</ListGroup.Item>
+              <ListGroup.Item><b>ROL:</b> {props.user.rol}</ListGroup.Item>
               <ListGroup.Item><b>FECHA:</b> {props.user.fecha}</ListGroup.Item>
             </ListGroup>
           </Card>

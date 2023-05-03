@@ -3,18 +3,10 @@ const bcrypt = require("../utils/bcrypt");
 const changepass = require("../utils/findPassword");
 const Usuario = require("../models/Usuario");
 const Perfil = require("../models/Perfil");
-const { validationResult } = require("express-validator");
+const { deleteUploads } = require("../utils/deleteUploads");
 
 const createUser = async (req, res, next) => {
   try {
-    console.log(req.body)
-    const errors = await validationResult(req); // Encuentra los errores de validación en esta solicitud y los envuelve en un objeto
-
-    if (!errors.isEmpty())
-      return res
-        .status(422)
-        .json({ errors: errors.array(), error: "Email inválido" });
-
     const { nombre, apellido, apodo, email, password, rol, image } = req.body;
     const sql_usuario = `INSERT INTO usuarios(email,password,rol,fecha) VALUES($email,$password,$rol,datetime('now'))`;
     const usuario = new Usuario(email, await bcrypt.encrypt(password), rol);
@@ -31,7 +23,9 @@ const createUser = async (req, res, next) => {
       $nombre: perfil.nombre,
       $apellido: perfil.apellido,
       $apodo: perfil.apodo,
-      $foto: perfil.image,
+      $foto: req.file
+        ? `${process.env.URL}:${process.env.PORT}/public/${req.file.filename}`
+        : "",
     };
 
     perfil.actionsPerfil(sql_perfil, prf);
@@ -64,34 +58,46 @@ const getUsers = async (req, res, next) => {
     res.json(rows);
   });
 };
+/**
+ * Modificar usuarios
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ */
 const updateUser = async (req, res, next) => {
   try {
+    const { nombre, apellido, apodo, email, password, rol, image } = req.body;
     const id = Number(req.params.id);
     const sql_usuario = `UPDATE usuarios SET email=$email, password=$password, rol=$rol, fecha=datetime('now') WHERE id=${id}`;
-    const usuario = new Usuario(
-      req.body.email,
-      await bcrypt.encrypt(req.body.password),
-      req.body.rol
-    );
+    const usuario = new Usuario(email, await bcrypt.encrypt(password), rol);
     const usr = {
       $email: usuario.email,
       $password: usuario.password,
       $rol: usuario.rol,
     };
     usuario.actionsUser(sql_usuario, usr);
-    const sql_perfil = `UPDATE perfil SET nombre=$nombre, apellido=$apellido, apodo=$apodo,foto=$foto WHERE id_usuario=${id}`;
-    const perfil = new Perfil(
-      req.body.nombre,
-      req.body.apellido,
-      req.body.apodo,
-      req.body.foto
-    );
-    const prf = {
-      $nombre: perfil.nombre,
-      $apellido: perfil.apellido,
-      $apodo: perfil.apodo,
-      $foto: perfil.foto,
-    };
+
+    const perfil = new Perfil(nombre, apellido, apodo, image);
+    //Evaluo si se cambia la imagen o se deja la misma
+    if (req.file) {
+      const sql_perfil = `UPDATE perfil SET nombre=$nombre, apellido=$apellido, apodo=$apodo,foto=$foto WHERE id_usuario=${id}`;
+
+      const prf = {
+        $nombre: perfil.nombre,
+        $apellido: perfil.apellido,
+        $apodo: perfil.apodo,
+        $foto: `${process.env.URL}:${process.env.PORT}/public/${req.file.filename}`,
+      };
+      //Elimino la imagen del servidor
+      deleteUploads(id, "SELECT foto FROM perfil WHERE id_usuario = ?");
+    } else {
+      const sql_perfil = `UPDATE perfil SET nombre=$nombre, apellido=$apellido, apodo=$apodo WHERE id_usuario=${id}`;
+      const prf = {
+        $nombre: perfil.nombre,
+        $apellido: perfil.apellido,
+        $apodo: perfil.apodo,
+      };
+    }
     perfil.actionsPerfil(sql_perfil, prf);
 
     res.json({

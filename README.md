@@ -40,7 +40,7 @@ npx create-react-app "mi_app"
 ### Front-end
 
 
-http://localhost:3001
+http://localhost:3000
 
 
 ### Back-end
@@ -56,5 +56,5 @@ http://localhost:3001
 
 2. En la raiz del proyecto ejecutar:
 
-`npm view` (levanta el servidor y el cliente simultáneamente)
+`npm go` (levanta el servidor y el cliente simultáneamente)
 

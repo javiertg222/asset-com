@@ -12,7 +12,7 @@ const deleteUploads = (id, sql) => {
     if(row.image){
     const arr = row.image.split("/");
 
-    fs.unlink(`server/uploads/${arr[arr.length - 1]}`, function (err) {
+    fs.unlink(`uploads/${arr[arr.length - 1]}`, function (err) {
       if (err) throw err;
       console.info("Image deleted!");
     });

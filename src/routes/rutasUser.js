@@ -6,7 +6,7 @@ const router = express.Router();
 const { upload } = require("../controllers/uploadController");
 //Importamos los controladores
 const controllerUser = require("../controllers/userController");
-const {validatorUser} = require("../validators/validator")
+const {validatorUser, validate} = require("../validators/validator")
 
 //USER ENDPOINTS
 
@@ -24,13 +24,13 @@ router.get("/usuario/:id", controllerUser.GET_USER);
  * Insertar usuarios
  */
 
-router.post("/usuario", validatorUser(), upload, controllerUser.CREATE_USER);
+router.post("/usuario", upload, controllerUser.CREATE_USER);
 
 /**
  * Modificar usuarios
  */
 
-router.put("/usuario/:id", validatorUser(), upload, controllerUser.UPDATE_USER);
+router.put("/usuario/:id", upload, controllerUser.UPDATE_USER);
 
 /**
  * Borrar usuarios

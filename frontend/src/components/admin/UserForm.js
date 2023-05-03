@@ -9,7 +9,7 @@ function UserForm() {
   /**Constante estado para los datos del usuario a modificar.
    Recupero con el hook useLocation el usuario enviado con useNavigate 
    */
-  const { state } = useLocation(null);
+  const { state } = useLocation();
   const [alerta, setAlerta] = useState(null);
 
   //VALIDACIONES FORMULARIO
@@ -65,7 +65,6 @@ function UserForm() {
     const form = e.target;
     const formData = new FormData(form);
     formData.append("user", Object.entries(formData.entries()));
-    console.log(formData);
 
     let url = "";
     let metodo = "";
@@ -93,96 +92,6 @@ function UserForm() {
     e.target.reset();
   }
 
-  // /**
-  //  * Recoge los datos del evento onChange del formulario
-  //  * @param {*} e
-  //  */
-  // const handleInputChange = (e) => {
-  //   // console.log(e.target.name);
-  //   // console.log(e.target.value);
-  //   setDatos({
-  //     ...datos,
-  //     [e.target.name]: e.target.value,
-  //   });
-  // };
-
-  // /**
-  //  * Función para obtener todos los usuarios de la BBDD
-  //  */
-  // function getUsers() {
-  //   fetch("http://localhost:3001/api/users")
-  //     .then((res) => res.json())
-  //     .then((data) => setUsers(data))
-  //     .catch((error) => console.log(error));
-  // }
-  // useEffect(() => {
-  //   getUsers();
-  // }, []);
-
-  // /**
-  //  * Función para saber si está repetido el email de un usuario
-  //  * @param {*} email
-  //  * @returns true o flase
-  //  */
-
-  // function findEmail(email) {
-  //   const user = users.find((user) => user.email_user === email);
-  //   if (user) {
-  //     return true;
-  //   }
-  // }
-  // /**
-  //  * Función para manejar el envio del formulario
-  //  * @param {*} datos
-  //  * @param {*} e
-  //  * @returns
-  //  */
-  // function handleSubmitUser(datos, e) {
-  //   //Previene al navegador recargar la página
-  //   e.preventDefault();
-
-  //   // LEER DATOS DEL FORMULARIO
-
-  //   const form = e.target;
-  //   const formData = new FormData(form);
-  //   const formJson = Object.fromEntries(formData.entries());
-
-  //   //Variables para modificar los parámetros del fetch según sea crear/modificar usuario
-  //   let url = "";
-  //   let metodo = "";
-
-  //   if (state != null) {
-  //     url = `http://localhost:3001/api/user/update/${state.userData.id_user}`;
-  //     metodo = "PUT";
-  //   } else {
-  //     if (!findEmail(datos.email)) {
-  //       url = "http://localhost:3001/api/user";
-  //       metodo = "POST";
-  //     } else {
-  //       return;
-  //     }
-  //   }
-
-  //   // Se pasa formJson en el cuerpo directamente:
-
-  //   fetch(url, {
-  //     method: metodo,
-  //     body: JSON.stringify(formJson),
-  //     headers: {
-  //       Accept: "application/json",
-  //       "Content-Type": "application/json",
-  //     },
-  //   })
-  //     .then((res) => {
-  //       if (res.status === 200) {
-  //         setAlerta(true);
-  //       }
-  //     })
-  //     .catch((error) => console.error(error));
-
-  //   // Limpiar campos
-  //   e.target.reset();
-  // }
 
   return (
     <>

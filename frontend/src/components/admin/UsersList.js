@@ -5,6 +5,7 @@ import AlertData from "../AlertData";
 import CardUser from "./CardUser";
 import Searcher from "../Searcher";
 import { FaSearch } from "react-icons/fa";
+import { getUsers, deleteUser } from "../../utils/users";
 
 function UsersList() {
   //Constante estado para enviar los datos de un usuario al formulario para modificar
@@ -25,44 +26,21 @@ function UsersList() {
     ? users
     : users.filter(
         (user) =>
-          user.name_user
+          user.nombre
             .toLowerCase()
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, "")
             .includes(search.toLowerCase()) ||
-          user.nickname_user
+          user.apodo
             .toLowerCase()
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, "")
             .includes(search.toLowerCase())
       );
 
-  /**
-   * Obtener los usuarios de la api para mostrarlos en la tabla
-   */
-
-  function listUsers() {
-    fetch("http://localhost:3001/api/users")
-      .then((res) => res.json())
-      .then((data) => setUsers(data))
-      .catch((error) => console.log(error));
-  }
-  /**
-   * Borrar usuarios
-   * @param {*} id
-   */
-  function deleteUser(id) {
-    fetch(`http://localhost:3001/api/user/delete/${id}`, { method: "DELETE" })
-      .then((res) => {
-        console.log(res.json());
-        listUsers();
-      })
-      .catch((error) => console.log(error));
-  }
-
   useEffect(() => {
-    listUsers();
-  }, []);
+    getUsers("http://localhost:3001/usuarios", setUsers);
+  }, [users]);
 
   return (
     <>
@@ -103,14 +81,14 @@ function UsersList() {
             ) : (
               result.map((user, index) => (
                 <>
-                  <tr key={user.id_user}>
+                  <tr key={index}>
                     <td
                       onClick={() => {
                         setUser(user);
                         setPulsado(true);
                       }}
                     >
-                      {user.id_user}
+                      {user.id}
                     </td>
                     <td
                       onClick={() => {
@@ -118,7 +96,7 @@ function UsersList() {
                         setPulsado(true);
                       }}
                     >
-                      {user.name_user}
+                      {user.nombre}
                     </td>
                     <td
                       onClick={() => {
@@ -126,7 +104,7 @@ function UsersList() {
                         setPulsado(true);
                       }}
                     >
-                      {user.nickname_user}
+                      {user.apodo}
                     </td>
                     <td
                       onClick={() => {
@@ -134,7 +112,7 @@ function UsersList() {
                         setPulsado(true);
                       }}
                     >
-                      {user.email_user}
+                      {user.email}
                     </td>
                     <td
                       onClick={() => {
@@ -142,7 +120,7 @@ function UsersList() {
                         setPulsado(true);
                       }}
                     >
-                      {user.name_rol}
+                      {user.rol}
                     </td>
                     <td
                       onClick={() => {
@@ -168,7 +146,7 @@ function UsersList() {
                         Modificar
                       </Button>{" "}
                       <Button
-                        onClick={() => deleteUser(user.id_user)}
+                        onClick={() => deleteUser(user.id)}
                         variant="outline-danger"
                       >
                         Borrar
