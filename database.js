@@ -60,7 +60,7 @@ let db = new sqlite3.Database("./src/bbdd/assetcom.sqlite3", (error) => {
         "nombre"	TEXT,
         "apellido"	TEXT,
         "apodo"	TEXT,
-        "foto"	TEXT,
+        "image"	TEXT,
         "id_usuario"	INTEGER,
         FOREIGN KEY("id_usuario") REFERENCES "usuarios"("id") ON UPDATE CASCADE ON DELETE CASCADE,
         PRIMARY KEY("id" AUTOINCREMENT)
