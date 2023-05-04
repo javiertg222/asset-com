@@ -5,7 +5,7 @@ let db = new sqlite3.Database("./src/bbdd/assetcom.sqlite3", (error) => {
     console.error(error.message);
     throw error;
   } else {
-    console.log("Connected to the SQLite database.");
+   
     //Crear la tabla configuración
     db.run(
       `CREATE TABLE IF NOT EXISTS "configuracion" (
@@ -44,8 +44,8 @@ let db = new sqlite3.Database("./src/bbdd/assetcom.sqlite3", (error) => {
       "id"	INTEGER,
       "nombre"	TEXT,
       "n_serie"	TEXT,
-      "estado"	TEXT DEFAULT 'alta' CHECK("estado" IN ('alta', 'mantenimiento', 'baja')),
-      "localizacion"	TEXT DEFAULT 'empresa' CHECK("localizacion" IN ('empresa', 'transito', 'cliente')),
+      "estado"	TEXT DEFAULT 'alta' CHECK("estado" IN ('Alta', 'Mantenimiento', 'Baja')),
+      "localizacion"	TEXT DEFAULT 'empresa' CHECK("localizacion" IN ('Empresa', 'Tránsito', 'Cliente')),
       "imagen"	TEXT,
       "fecha"	TEXT,
       "id_usuario"	INTEGER,
@@ -92,6 +92,8 @@ let db = new sqlite3.Database("./src/bbdd/assetcom.sqlite3", (error) => {
       FOREIGN KEY("id_etiqueta") REFERENCES "etiqueta"("id") ON UPDATE CASCADE ON DELETE CASCADE,
       FOREIGN KEY("id_activo") REFERENCES "activo" ON UPDATE CASCADE ON DELETE CASCADE
     )`);
+
+    console.log("Connected to the SQLite database.");
   }
 });
 

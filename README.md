@@ -56,5 +56,5 @@ http://localhost:3001
 
 2. En la raiz del proyecto ejecutar:
 
-`npm go` (levanta el servidor y el cliente simultáneamente)
+`npm run app` (levanta el servidor y el cliente simultáneamente)
 

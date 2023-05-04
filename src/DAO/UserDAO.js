@@ -78,11 +78,14 @@ const updateUser = async (req, res, next) => {
     usuario.actionsUser(sql_usuario, usr);
 
     const perfil = new Perfil(nombre, apellido, apodo, image);
+    const sql_perfil="";
+    const prf={};
+
     //Evaluo si se cambia la imagen o se deja la misma
     if (req.file) {
-      const sql_perfil = `UPDATE perfil SET nombre=$nombre, apellido=$apellido, apodo=$apodo,foto=$foto WHERE id_usuario=${id}`;
+      sql_perfil = `UPDATE perfil SET nombre=$nombre, apellido=$apellido, apodo=$apodo,foto=$foto WHERE id_usuario=${id}`;
 
-      const prf = {
+      prf = {
         $nombre: perfil.nombre,
         $apellido: perfil.apellido,
         $apodo: perfil.apodo,
@@ -91,8 +94,8 @@ const updateUser = async (req, res, next) => {
       //Elimino la imagen del servidor
       deleteUploads(id, "SELECT foto FROM perfil WHERE id_usuario = ?");
     } else {
-      const sql_perfil = `UPDATE perfil SET nombre=$nombre, apellido=$apellido, apodo=$apodo WHERE id_usuario=${id}`;
-      const prf = {
+      sql_perfil = `UPDATE perfil SET nombre=$nombre, apellido=$apellido, apodo=$apodo WHERE id_usuario=${id}`;
+      prf = {
         $nombre: perfil.nombre,
         $apellido: perfil.apellido,
         $apodo: perfil.apodo,
