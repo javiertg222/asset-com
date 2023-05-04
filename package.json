@@ -9,7 +9,7 @@
     "start": "node server.js",
     "start-server": "nodemon --exec node server.js",
     "start-front": "cd frontend/ && npm start",
-    "start-app": "npm run start-server && npm run start-front"
+    "app": "npm run start-server && npm run start-front"
   },
   "keywords": ["proyecto", "daw"],
   "author": "Javier",

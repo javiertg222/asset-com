@@ -1,10 +1,10 @@
 const db = require("../../database");
 class Perfil {
-  constructor(nombre, apellido, apodo, foto) {
+  constructor(nombre, apellido, apodo, image) {
     this.nombre = nombre;
     this.apellido = apellido;
     this.apodo = apodo;
-    this.foto = foto;
+    this.image = image;
   }
   actionsPerfil(sql, perfil) {
     const stm = db.prepare(sql, (error) => {

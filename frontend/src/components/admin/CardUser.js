@@ -1,5 +1,4 @@
-import Card from "react-bootstrap/Card";
-import ListGroup from "react-bootstrap/ListGroup";
+import {Card, ListGroup, Image} from "react-bootstrap";
 import { Modal, Button } from "react-bootstrap";
 
 function CardUser(props) {
@@ -18,7 +17,7 @@ function CardUser(props) {
         <Modal.Body>
           <Card bg="primary" style={{ width: "18rem" }}>
             <ListGroup variant="flush">
-            <ListGroup.Item><b>FOTO:</b> {props.user.foto}</ListGroup.Item>
+            <ListGroup.Item><b>FOTO:</b><Image className="m-1" src={props.user.image} style={{height:60 , width:50,}}  thumbnail/></ListGroup.Item>
               <ListGroup.Item><b>ID:</b> {props.user.id}</ListGroup.Item>
               <ListGroup.Item><b>NOMBRE:</b> {props.user.nombre}</ListGroup.Item>
               <ListGroup.Item><b>APELLIDO:</b> {props.user.apellido}</ListGroup.Item>

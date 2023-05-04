@@ -13,7 +13,7 @@ const getUsers = (url, setUsers)=>{
  * Método para borrar un usuario
  * @param {id usuario} id 
  */
-const deleteUser = async (id)=>{
+const deleteUser = (id)=>{
   fetch(`http://localhost:3001/usuario/${id}`, { method: "DELETE" })
       .then((res) => {
         console.log(res.json());
@@ -27,8 +27,8 @@ const deleteUser = async (id)=>{
  * @returns boolean
  */
 
-const findEmail = (email, users) => {
-  const user = users.find((user) => user.email_user === email);
+const findEmail = async (email, users) => {
+  const user = await users.find((user) => user.email_user === email);
   if (user) {
     return true;
   }

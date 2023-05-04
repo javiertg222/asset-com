@@ -4,7 +4,12 @@ const changepass = require("../utils/findPassword");
 const Usuario = require("../models/Usuario");
 const Perfil = require("../models/Perfil");
 const { deleteUploads } = require("../utils/deleteUploads");
-
+/**
+ * Método para crear usuarios
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 const createUser = async (req, res, next) => {
   try {
     const { nombre, apellido, apodo, email, password, rol, image } = req.body;
@@ -17,13 +22,13 @@ const createUser = async (req, res, next) => {
     };
     usuario.actionsUser(sql_usuario, usr);
 
-    const sql_perfil = `INSERT INTO perfil(nombre, apellido, apodo, foto, id_usuario) VALUES($nombre, $apellido, $apodo, $foto, (SELECT id FROM usuarios WHERE ROWID IN (SELECT max(ROWID) FROM usuarios)))`;
+    const sql_perfil = `INSERT INTO perfil(nombre, apellido, apodo, image, id_usuario) VALUES($nombre, $apellido, $apodo, $image, (SELECT id FROM usuarios WHERE ROWID IN (SELECT max(ROWID) FROM usuarios)))`;
     const perfil = new Perfil(nombre, apellido, apodo, image);
     const prf = {
       $nombre: perfil.nombre,
       $apellido: perfil.apellido,
       $apodo: perfil.apodo,
-      $foto: req.file
+      $image: req.file
         ? `${process.env.URL}:${process.env.PORT}/public/${req.file.filename}`
         : "",
     };
@@ -48,7 +53,7 @@ const getUser = async (req, res, next) => {
 };
 const getUsers = async (req, res, next) => {
   const sql =
-    "SELECT usuarios.id,nombre,apellido,apodo,email,password,rol,foto,fecha FROM usuarios INNER JOIN perfil ON usuarios.id=perfil.id_usuario;";
+    "SELECT usuarios.id,nombre,apellido,apodo,email,password,rol,image,fecha FROM usuarios INNER JOIN perfil ON usuarios.id=perfil.id_usuario;";
   const params = [];
   db.all(sql, params, (err, rows) => {
     if (err) {
@@ -66,33 +71,33 @@ const getUsers = async (req, res, next) => {
  */
 const updateUser = async (req, res, next) => {
   try {
-    const { nombre, apellido, apodo, email, password, rol, image } = req.body;
+    const { nombre, apellido, apodo, email, rol, image } = req.body;
     const id = Number(req.params.id);
-    const sql_usuario = `UPDATE usuarios SET email=$email, password=$password, rol=$rol, fecha=datetime('now') WHERE id=${id}`;
-    const usuario = new Usuario(email, await bcrypt.encrypt(password), rol);
+
+    const sql_usuario = `UPDATE usuarios SET email=$email, rol=$rol, fecha=datetime('now') WHERE id=${id}`;
+    const usuario = new Usuario(email, "", rol);
     const usr = {
       $email: usuario.email,
-      $password: usuario.password,
       $rol: usuario.rol,
     };
     usuario.actionsUser(sql_usuario, usr);
 
     const perfil = new Perfil(nombre, apellido, apodo, image);
-    const sql_perfil="";
-    const prf={};
+    let sql_perfil = "";
+    let prf = {};
 
     //Evaluo si se cambia la imagen o se deja la misma
     if (req.file) {
-      sql_perfil = `UPDATE perfil SET nombre=$nombre, apellido=$apellido, apodo=$apodo,foto=$foto WHERE id_usuario=${id}`;
+      sql_perfil = `UPDATE perfil SET nombre=$nombre, apellido=$apellido, apodo=$apodo,image=$image WHERE id_usuario=${id}`;
 
       prf = {
         $nombre: perfil.nombre,
         $apellido: perfil.apellido,
         $apodo: perfil.apodo,
-        $foto: `${process.env.URL}:${process.env.PORT}/public/${req.file.filename}`,
+        $image: `${process.env.URL}:${process.env.PORT}/public/${req.file.filename}`,
       };
       //Elimino la imagen del servidor
-      deleteUploads(id, "SELECT foto FROM perfil WHERE id_usuario = ?");
+      deleteUploads(id, "SELECT image FROM perfil WHERE id_usuario = ?");
     } else {
       sql_perfil = `UPDATE perfil SET nombre=$nombre, apellido=$apellido, apodo=$apodo WHERE id_usuario=${id}`;
       prf = {
@@ -112,23 +117,35 @@ const updateUser = async (req, res, next) => {
     console.log(error.message);
   }
 };
-
+/**
+ * Método para borrar usuarios
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ */
 const deleteUser = async (req, res, next) => {
   try {
     const id = Number(req.params.id);
-    const sql = `DELETE FROM usuarios WHERE usuarios.id=${id}; DELETE FROM perfil WHERE perfil.id_usuario=${id}`;
-    const stm = db.prepare(sql, (error) => {
-      if (error) {
-        throw new Error(error.message);
-      }
+    const sqls = [
+      `DELETE FROM usuarios WHERE usuarios.id=${id}`, `DELETE FROM perfil WHERE perfil.id_usuario=${id}`,
+    ];
+
+    sqls.map((sql) => {
+      const stm = db.prepare(sql, (error) => {
+        if (error) {
+          throw new Error(error.message);
+        }
+      });
+      stm.run((error) => {
+        if (error) {
+          throw new Error(error.message);
+        }
+      });
+      stm.finalize();
     });
-    stm.run((error) => {
-      if (error) {
-        throw new Error(error.message);
-      }
-      res.json({ message: "Usuario borrado con éxito!", id: id });
-    });
-    stm.finalize();
+     //Elimino la imagen del servidor
+     deleteUploads(id, "SELECT image FROM perfil WHERE id_usuario = ?");
+    res.json({ message: "Usuario borrado con éxito!", id: id });
   } catch (error) {
     console.log(error.message);
   }

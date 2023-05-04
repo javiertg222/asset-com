@@ -18,8 +18,6 @@ function LoginForm() {
    * @param {*} e
    */
   const handleInputChange = (e) => {
-    // console.log(e.target.name);
-    // console.log(e.target.value);
     setCredentials({
       ...credentials,
       [e.target.name]: e.target.value,

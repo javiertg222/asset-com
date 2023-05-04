@@ -22,7 +22,7 @@ const loginController = async (req, res) => {
         .json({ errors: errors.array(), error: "Email o password inválidos" });
 
     //Recupero todos los datos de los usuarios para comprobar que el email y password existen.
-    db.all("SELECT * FROM user", async (err, users) => {
+    db.all("SELECT * FROM usuarios", async (err, users) => {
       if (err) {
         return res.status(400).json({ error: err.message });
       }

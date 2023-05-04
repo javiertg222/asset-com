@@ -20,12 +20,12 @@ function UserForm() {
     handleSubmit,
   } = useForm({ mode: "onChange" });
   const [user, setUser] = useState({
-    nombre: "",
-    apellido: "",
-    apodo: "",
-    email: "",
+    nombre: state != null ? state.userData.nombre : "",
+    apellido: state != null ? state.userData.apellido : "",
+    apodo: state != null ? state.userData.apodo : "",
+    email: state != null ? state.userData.email : "",
     password: "",
-    rol: "",
+    rol: state != null ? state.userData.rol : "",
     image: "",
   });
 
@@ -45,7 +45,7 @@ function UserForm() {
    * @param {evento} e
    * @param {usuario} user
    */
-  function handleSubmitUser(user, e) {
+  function handleSubmitUser(user,e) {
     //Previene al navegador recargar la página
     e.preventDefault();
 
@@ -117,7 +117,7 @@ function UserForm() {
                 type="text"
                 name="nombre"
                 placeholder="Enter name"
-                defaultValue={state != null ? state.userData.nombre : ""}
+                defaultValue={user.nombre}
                 onChange={handleInputChange}
                 {...register("nombre", {
                   required: {
@@ -136,7 +136,7 @@ function UserForm() {
                 type="text"
                 name="apellido"
                 placeholder="Enter apellido"
-                defaultValue={state != null ? state.userData.apellido : ""}
+                defaultValue={user.apellido }
                 onChange={handleInputChange}
                 {...register("apellido", {
                   required: {
@@ -155,7 +155,7 @@ function UserForm() {
                 type="text"
                 name="apodo"
                 placeholder="Nick Name"
-                defaultValue={state != null ? state.userData.apodo : ""}
+                defaultValue={user.apodo}
                 onChange={handleInputChange}
                 {...register("apodo", {
                   required: {
@@ -176,7 +176,7 @@ function UserForm() {
                 type="email"
                 name="email"
                 placeholder="Email"
-                defaultValue={state != null ? state.userData.email : ""}
+                defaultValue={user.email}
                 onChange={handleInputChange}
                 {...register("email", {
                   required: {
@@ -205,7 +205,7 @@ function UserForm() {
                   type="password"
                   name="password"
                   placeholder="Password"
-                  defaultValue={state != null ? state.userData.password : ""}
+                  defaultValue={user.password}
                   onChange={handleInputChange}
                   {...register("password", {
                     required: {
@@ -239,7 +239,7 @@ function UserForm() {
               <Form.Label>Rol</Form.Label>
               <Form.Select
                 name="rol"
-                defaultValue={state != null ? state.userData.rol : ""}
+                defaultValue={user.rol}
                 onChange={handleInputChange}
               >
                 {roles.map((rol, index) => (
