@@ -6,7 +6,7 @@ const router = express.Router();
 const controllerAsset = require("../controllers/assetController");
 
 //Middleware para subir imágenes al servidor
-const { upload } = require("../controllers/uploadController");
+const { upload } = require("../middlewares/upload");
 
 //ASSET ENDPOINTS
 /**

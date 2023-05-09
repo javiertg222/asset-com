@@ -2,7 +2,7 @@ import { Container, Row, Col } from "react-bootstrap";
 
 export default function Footer() {
   return (
-    <Container className="border-top" fluid="md" style={{fontSize: '0.7rem' }}>
+    <Container aria-label="contentinfo" className="border-top" fluid="md" style={{fontSize: '0.7rem' }}>
       <Row className="mt-3">
         <Col sm={3}>Proyecto creado por Assetcom 2023</Col>
         <Col sm={8}>
@@ -23,6 +23,7 @@ export default function Footer() {
             target="_blank"
             href="https://github.com/javiertg222/asset-com.git"
             rel="noreferrer"
+            aria-label="enlace a github"
           >
             <i className="bi bi-github" style={{ fontSize: "1.8rem" }} />
           </a>

@@ -6,13 +6,13 @@ const moment = require("moment");
  */
 const createToken = (user) => {
   const usr = {
-    id: user.id_user,
-    name: user.name_user,
-    rol: user.id_rol,
+    id: user.id,
+    nombre: user.nombre,
+    rol: user.rol,
   };
 
   const payload = {
-    sub: usr,
+    user: usr,
     iat: moment().unix(),
     exp: moment().add(1, "hours").unix(),
   };

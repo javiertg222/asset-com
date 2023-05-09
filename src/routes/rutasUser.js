@@ -3,7 +3,7 @@ const express = require("express");
 //Creamos el objeto para definir las rutas
 const router = express.Router();
 //Middleware para subir imágenes al servidor
-const { upload } = require("../controllers/uploadController");
+const { upload } = require("../middlewares/upload");
 //Importamos los controladores
 const controllerUser = require("../controllers/userController");
 const {validatorUser, validate} = require("../validators/validator")

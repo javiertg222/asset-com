@@ -5,7 +5,7 @@ const router = express.Router();
 //Importamos los controladores
 const controllerConfiguration = require("../controllers/configurationController");
 //Middleware para subir imágenes al servidor
-const { upload } = require("../controllers/uploadController");
+const { upload } = require("../middlewares/upload");
 
 //SETTINGS ENDPOINTS
 /**

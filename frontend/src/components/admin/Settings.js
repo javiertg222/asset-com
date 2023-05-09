@@ -2,6 +2,7 @@ import { Button, Container, Col, Form, Row } from "react-bootstrap";
 import AlertData from "../AlertData";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
+import { RiHome4Line } from "react-icons/ri";
 
 function Settings() {
   const [alerta, setAlerta] = useState(false);
@@ -84,7 +85,7 @@ function Settings() {
         method="POST"
         onSubmit={handleSubmit(handleSubmitConfig)}
       >
-        <h3>Configuración:</h3>
+        <h1>Configuración</h1>
         <Row className="mb-3">
           <Col sm={6}>
             <Form.Group as={Col} controlId="formGridTitle">

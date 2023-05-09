@@ -4,11 +4,13 @@ const changepass = require("../utils/findPassword");
 const Usuario = require("../models/Usuario");
 const Perfil = require("../models/Perfil");
 const { deleteUploads } = require("../utils/deleteUploads");
+const { findEmail } = require("../utils/findEmail");
+const { createToken } = require("../utils/createToken");
 /**
  * Método para crear usuarios
- * @param {*} req 
- * @param {*} res 
- * @param {*} next 
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
  */
 const createUser = async (req, res, next) => {
   try {
@@ -127,7 +129,8 @@ const deleteUser = async (req, res, next) => {
   try {
     const id = Number(req.params.id);
     const sqls = [
-      `DELETE FROM usuarios WHERE usuarios.id=${id}`, `DELETE FROM perfil WHERE perfil.id_usuario=${id}`,
+      `DELETE FROM usuarios WHERE usuarios.id=${id}`,
+      `DELETE FROM perfil WHERE perfil.id_usuario=${id}`,
     ];
 
     sqls.map((sql) => {
@@ -143,8 +146,8 @@ const deleteUser = async (req, res, next) => {
       });
       stm.finalize();
     });
-     //Elimino la imagen del servidor
-     deleteUploads(id, "SELECT image FROM perfil WHERE id_usuario = ?");
+    //Elimino la imagen del servidor
+    deleteUploads(id, "SELECT image FROM perfil WHERE id_usuario = ?");
     res.json({ message: "Usuario borrado con éxito!", id: id });
   } catch (error) {
     console.log(error.message);
@@ -183,6 +186,47 @@ const changePassword = async (req, res) => {
   }
 };
 
+/**
+ * Valida las credenciales y crea un token
+ * @param {*} req
+ * @param {*} res
+ */
+const login = async (req, res) => {
+  const credentials = {
+    email: req.body.email,
+    password: req.body.password,
+  };
+
+  //Recupero todos los datos de los usuarios para comprobar que el email y password existen.
+  db.all(
+    "SELECT usuarios.id, email,password, rol, nombre, apodo FROM usuarios INNER JOIN perfil ON usuarios.id=perfil.id_usuario",
+    async (err, users) => {
+      if (err) {
+        console.log(err.message);
+      }
+      const user = await findEmail(credentials.email, users);
+      if (!user) {
+        return res.json({ mensaje: "Usuario inválido" });
+      }
+      const validPassword = await bcrypt.compare(
+        credentials.password,
+        user.password
+      );
+      if (!validPassword) {
+        return res.json({ mensaje: "Contraseña incorrecta" });
+      } else {
+        //Crear token
+        const token = createToken(user);
+
+        res.json({
+          mensaje: "Usuario autenticado correctamente",
+          token: token,
+        });
+      }
+    }
+  );
+};
+
 module.exports = {
   getUsers,
   getUser,
@@ -190,4 +234,5 @@ module.exports = {
   updateUser,
   deleteUser,
   changePassword,
+  login,
 };

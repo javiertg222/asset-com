@@ -127,7 +127,7 @@ function AssetForm() {
   }
 
   return (
-    <Container className="m-5">
+    <Container className="m-50">
       {alerta
         ? AlertData(
             `Activo ${state == null ? "añadido" : "modificado"} correctamente!`,

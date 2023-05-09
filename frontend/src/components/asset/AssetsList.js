@@ -23,13 +23,13 @@ function AssetsList() {
    */
   const estilo = (asset) => {
     if (asset.status === "Alta") {
-      return "#14A44D";
+      return "#198754";
     }
     if (asset.status === "Pendiente") {
-      return "#E4A11B";
+      return "#e4a11b ";
     }
     if (asset.status === "Baja") {
-      return "#DC4C64";
+      return "#dc3545";
     }
   };
   //Constante estado para enviar los datos de un activo al formulario para modificar
@@ -82,7 +82,7 @@ function AssetsList() {
 
   return (
     <>
-      <Container className="m-6" fluid>
+      <Container className="m-50">
         <Row className="justify-content-md-center mt-3">
           <Col md="auto" lg="3">
             <Searcher searcherToParent={searcherToAssets} />

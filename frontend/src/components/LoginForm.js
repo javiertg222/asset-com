@@ -1,17 +1,20 @@
-import { Alert, Button, Form, Stack, Card } from "react-bootstrap";
-import React, { useState, useEffect } from "react";
+import { Button, Form, Stack, Card } from "react-bootstrap";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import storage from "../utils/storage";
+import { useNavigate } from "react-router-dom";
 
 function LoginForm() {
   const {
     register,
     formState: { errors },
     handleSubmit,
-  } = useForm({ mode: "onChange" });
+  } = useForm({ mode: "onBlur" });
   //Valores del formulario
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   //Mensajes repuesta validación servidor
-  const [message, setMessage] = useState({});
+  const [mensaje, setMensaje] = useState("");
+  const navigate = useNavigate();
 
   /**
    * Recoge los datos del evento onChange del formulario
@@ -32,7 +35,7 @@ function LoginForm() {
     const formData = new FormData(form);
     const formJson = Object.fromEntries(formData.entries());
 
-    fetch("http://localhost:3001/api/login", {
+    fetch("http://localhost:3001/login", {
       method: form.method,
       body: JSON.stringify(formJson),
       headers: {
@@ -41,19 +44,28 @@ function LoginForm() {
       },
     })
       .then((res) => res.json())
-      .then((data) => setMessage(data))
+      .then((data) => {
+        setMensaje(data.mensaje);
+        if (data.token) {
+          //Guardamos el token en el navegador
+          storage.set("token", data.token);
+          //Redirigimos a la home
+          navigate("/home");
+        }
+      })
       .catch((error) => console.log(error));
   }
-
-  useEffect(() => {
-    //Guardamos el token en el navegador
-    localStorage.setItem("token", JSON.stringify(message.token));
-  }, [message.token]);
 
   return (
     <Stack gap={2} className="col-md-3 mx-auto m-3">
       <Card className="text-center">
-        <Card.Header>LOGIN</Card.Header>
+        <Card.Header
+          role="heading"
+          style={{ backgroundImage: "url(logo.png)", backgroundSize: 60 }}
+          aria-level="1"
+        >
+          <b>LOGIN</b>
+        </Card.Header>
         <Card.Body>
           <Form method="POST" onSubmit={handleSubmit(handleSubmitCredentials)}>
             <Form.Group className="mb-3" controlId="formBasicEmail">
@@ -101,7 +113,7 @@ function LoginForm() {
               </span>
             </Form.Group>
             <span className="text-danger text-small d-block mb-2">
-              {message && message.error}
+              {mensaje}
             </span>
             <Form.Group className="mb-3" controlId="formBasicCheckbox">
               <Form.Check type="checkbox" label="Recordarme" />

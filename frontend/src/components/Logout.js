@@ -1,5 +1,6 @@
+import storage from "../utils/storage";
 function Logout() {
-  localStorage.removeItem("token");
+  storage.remove("token");
 }
 
 export default Logout;

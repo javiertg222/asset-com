@@ -44,7 +44,7 @@ function UsersList() {
 
   return (
     <>
-      <Container className="m-6" fluid>
+      <Container className="m-50">
         <Row className="justify-content-md-center mt-3">
           <Col md="auto" lg="3">
             <Searcher searcherToParent={searcherToUserList} />

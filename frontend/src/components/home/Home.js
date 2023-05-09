@@ -47,7 +47,7 @@ function Home() {
           estadisticas[0].cant,
           estadisticas[2].cant,
         ],
-        backgroundColor: ["#DC4C64", "#14A44D", "#E4A11B"],
+        backgroundColor: ["#dc3545", "#198754", "#e4a11b "],
         hoverOffset: 4,
       },
     ],

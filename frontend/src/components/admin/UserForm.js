@@ -95,7 +95,7 @@ function UserForm() {
 
   return (
     <>
-      <Container className="m-5">
+      <Container className="m-50">
         {alerta &&
           AlertData(
             `Usuario ${

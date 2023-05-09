@@ -37,6 +37,7 @@ function NavBar() {
           src={config[0].image}
           style={{ width: 150, height: 35 }}
           thumbnail
+          alt="imagen corporativa"
         />
       </Col>
     );

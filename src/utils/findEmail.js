@@ -6,7 +6,7 @@
  * @returns boolean 
  */
 const findEmail = (email, users)=>{
-    return users.find((user) => email === user.email_user);
+    return users.find((user) => email === user.email);
 }
 
 module.exports = {findEmail}
