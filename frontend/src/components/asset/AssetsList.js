@@ -13,22 +13,22 @@ import AlertData from "../AlertData";
 import { FaBarcode, FaFilePdf, FaSearch } from "react-icons/fa";
 import Pdf from "./Pdf";
 import Searcher from "../Searcher";
+import { getAssets, deleteAsset } from "../../utils/assets";
 
 function AssetsList() {
-
   /**
    * Cambia de color el status de la tabla según sea "Alta, "Pendiente" o "Baja"
    * @param {*} asset
    * @returns
    */
   const estilo = (asset) => {
-    if (asset.status === "Alta") {
+    if (asset.estado === "Alta") {
       return "#198754";
     }
-    if (asset.status === "Pendiente") {
+    if (asset.estado === "Pendiente") {
       return "#e4a11b ";
     }
-    if (asset.status === "Baja") {
+    if (asset.estado === "Baja") {
       return "#dc3545";
     }
   };
@@ -46,39 +46,17 @@ function AssetsList() {
     ? assets
     : assets.filter(
         (asset) =>
-          asset.name_asset
+          asset.nombre
             .toLowerCase()
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, "")
             .includes(search.toLowerCase()) ||
-          asset.serial_number.toLowerCase().includes(search.toLowerCase())
+          asset.n_serie.toLowerCase().includes(search.toLowerCase())
       );
 
-  /**
-   * Obtener los activos de la api para mostrarlos en la tabla
-   */
-  function listAssets() {
-    fetch("http://localhost:3001/api/assets")
-      .then((res) => res.json())
-      .then((data) => setAssets(data))
-      .catch((error) => console.log(error));
-  }
-  /**
-   * Borrar usuarios
-   * @param {*} id
-   */
-  function deleteAsset(id) {
-    fetch(`http://localhost:3001/api/asset/delete/${id}`, { method: "DELETE" })
-      .then((res) => {
-        res.json();
-        listAssets();
-      })
-      .catch((error) => console.log(error));
-  }
-
   useEffect(() => {
-    listAssets();
-  }, []);
+    getAssets("http://localhost:3001/activos", setAssets);
+  }, [assets]);
 
   return (
     <>
@@ -117,6 +95,11 @@ function AssetsList() {
               <th>Nº Serie</th>
               <th>Estado</th>
               <th>Localización</th>
+              <th>Resolución</th>
+              <th>Tamaño</th>
+              <th>Núcleos</th>
+              <th>Ram</th>
+              <th>Tipo</th>
               <th>Fecha Creación/Modificación</th>
               <th>Código de Barras</th>
               <th>Acciones</th>
@@ -131,14 +114,23 @@ function AssetsList() {
               result.map((asset, index) => (
                 <>
                   <tr key={index}>
-                    <td>{asset.id_asset}</td>
+                    <td>{asset.id}</td>
                     <td>
-                      <Image src={asset.image} style={{height:45 , width:45,}}  thumbnail/>
+                      <Image
+                        src={asset.image}
+                        style={{ height: 45, width: 45 }}
+                        thumbnail
+                      />
                     </td>
-                    <td>{asset.name_asset}</td>
-                    <td>{asset.serial_number}</td>
-                    <td style={{ color: estilo(asset) }}>{asset.status}</td>
-                    <td>{asset.location}</td>
+                    <td>{asset.nombre}</td>
+                    <td>{asset.n_serie}</td>
+                    <td style={{ color: estilo(asset) }}>{asset.estado}</td>
+                    <td>{asset.localizacion}</td>
+                    <td>{asset.resolucion}</td>
+                    <td>{asset.tamano}</td>
+                    <td>{asset.nucleos}</td>
+                    <td>{asset.ram}</td>
+                    <td>{asset.id_m || asset.id_p}</td>
                     <td>{asset.fecha}</td>
                     <td>
                       <Button
@@ -164,7 +156,7 @@ function AssetsList() {
                         Modificar
                       </Button>{" "}
                       <Button
-                        onClick={() => deleteAsset(asset.id_asset)}
+                        onClick={() => deleteAsset(asset.id)}
                         variant="outline-danger"
                       >
                         Borrar

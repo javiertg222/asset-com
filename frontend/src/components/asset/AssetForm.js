@@ -1,19 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { Button, Container, Col, Form, Row, InputGroup } from "react-bootstrap";
+import { Button, Container, Col, Form, Row } from "react-bootstrap";
 import AlertData from "../AlertData";
 import resolucion from "../../data/resolucion.json";
-import tamaño from "../../data/tamaño.json";
+import tamano from "../../data/tamano.json";
 import ram from "../../data/ram.json";
 import status from "../../data/status.json";
 import location from "../../data/location.json";
 import etiquetas from "../../data/etiquetas.json";
-import activos from "../../data/activos.json";
+import assets from "../../data/assets.json";
 
 function AssetForm() {
-  //Constante estado para todos los activos
-  const [assets, setAssets] = useState([]);
   /**Constante estado para los datos del activo a modificar.
    Recupero con el hook useLocation el activo enviado con useNavigate 
    */
@@ -21,65 +19,59 @@ function AssetForm() {
   const [alerta, setAlerta] = useState(null);
 
   //VALIDACIONES
-  const { reset } = useForm({ mode: "onChange" });
-  const [datos, setDatos] = useState({
-    nombre: "",
-    n_serie: "",
-    estado: "",
-    localizacion: "",
-    imagen: "",
-    resolucion: "",
-    tamaño: "",
-    nucleos: "",
-    ram: "",
+  const {
+    reset,
+    register,
+    formState: { errors },
+    handleSubmit,
+  } = useForm({ mode: "onChange" });
+  const [activos, setActivos] = useState({
+    activo: state != null ? state.assetData.activo : "",
+    nombre: state != null ? state.assetData.nombre : "",
+    n_serie: state != null ? state.assetData.n_serie : "",
+    estado: state != null ? state.assetData.estado : "",
+    localizacion: state != null ? state.assetData.localizacion : "",
+    image: "",
+    resolucion: state != null ? state.assetData.resolucion : "",
+    tamano: state != null ? state.assetData.tamano : "",
+    nucleos: state != null ? state.assetData.nucleos : "",
+    ram: state != null ? state.assetData.ram : "",
     etiquetas: [],
-    activo: "",
   });
 
   /**
-   * Recoge los datos del evento onChange del formulario
-   * @param {*} e
+   * Funcion para los cambios en el formulario
+   * @param {evento} e
    */
   const handleInputChange = (e) => {
-    // console.log(e.target.name);
-    // console.log(e.target.value);
-    setDatos({
-      ...datos,
-      [e.target.name]: e.target.value,
-    });
+    const { value, checked } = e.target;
+    const { etiquetas } = activos;
+
+    //Si están chequeados
+    if (checked) {
+      setActivos({
+        ...activos,
+        [e.target.name]: e.target.value,
+        etiquetas: [...etiquetas, value],
+      });
+    }
+    // Si no están chequeados
+    else {
+      setActivos({
+        ...activos,
+        [e.target.name]: e.target.value,
+        etiquetas: activos.etiquetas.filter((e) => e !== value),
+      });
+    }
   };
 
   /**
-   * Función para obtener todos los activos de la BBDD
-   */
-  function getAssets() {
-    fetch("http://localhost:3001/api/assets")
-      .then((res) => res.json())
-      .then((data) => setAssets(data))
-      .catch((error) => console.log(error));
-  }
-  useEffect(() => {
-    getAssets();
-  }, []);
-
-  /**
-   * Función para saber si está repetido el serial number  de un asset
-   * @param {*} serialnumber
-   * @returns true o flase
-   */
-
-  function findAsset(serialnumber) {
-    const asset = assets.find((asset) => asset.serial_number === serialnumber);
-    if (asset) {
-      return true;
-    }
-  }
-  /**
    * Función para manejar el envio del formulario
    * @param {*} e
+   * @param {*} activos
    * @returns
    */
-  function handleSubmitAsset(e) {
+  function handleSubmitAsset(activos, e) {
     //Previene al navegador recargar la página
     e.preventDefault();
 
@@ -87,71 +79,67 @@ function AssetForm() {
 
     const form = e.target;
     const formData = new FormData(form);
-    formData.append("datos", Object.entries(formData.entries()));
+    formData.append("activos", Object.entries(formData.entries()));
 
     //Variables para modificar los parámetros del fetch según sea crear/modificar activos
     let url = "";
     let metodo = "";
 
     if (state != null) {
-      url = `http://localhost:3001/api/asset/update/${state.assetData.id_asset}`;
+      url = `http://localhost:3001/activo`;
       metodo = "PUT";
     } else {
-      if (!findAsset(datos.serialnumber)) {
-        url = "http://localhost:3001/api/asset";
-        metodo = "POST";
-      } else {
-        return;
-      }
+      url = `http://localhost:3001/activo`;
+      metodo = "POST";
     }
 
     // Se pasa formData en el cuerpo directamente:
 
-    fetch(url, {
-      method: metodo,
-      body: formData,
-      // headers: {
-      //   Accept: "application/json",
-      //   "Content-Type": "multipart/form-data",
-      // },
-    })
+    fetch(url, { method: metodo, body: formData })
       .then((res) => {
-        if (res.status === 200) {
+        if (res.ok) {
+          console.log("Todo bien");
           setAlerta(true);
+        } else {
+          console.log("Respuesta de red OK pero respuesta de HTTP no OK");
         }
       })
-      .catch((error) => console.error(error));
+      .catch((error) => console.log(error));
 
     // Limpiar campos
     e.target.reset();
   }
 
   return (
-    <Container className="m-50">
+    <Container className="m-5">
       {alerta
         ? AlertData(
             `Activo ${state == null ? "añadido" : "modificado"} correctamente!`,
             "success"
           )
         : null}
-      <Form id="form-asset" method="POST" onSubmit={handleSubmitAsset}>
+      <Form
+        className="m-5"
+        id="form-asset"
+        method="POST"
+        onSubmit={handleSubmit(handleSubmitAsset)}
+      >
         <h3>{state == null ? "Crear" : "Modificar"} Activo:</h3>
         <Row className="mb-3">
-          <Col xs={2}>
-            <InputGroup>
-              <InputGroup.Text variant="primary">Activo</InputGroup.Text>
-              <Form.Select
-                size="sm"
-                name="activo"
-                defaultValue={state != null ? state.assetData.activo : ""}
-                onChange={handleInputChange}
-              >
-                {activos.map((activo, index) => (
-                  <option key={index}>{activo.name}</option>
-                ))}
-              </Form.Select>
-            </InputGroup>
-          </Col>
+          <Form.Group as={Col} xs={3} controlId="formGridActivo">
+            <Form.Label variant="primary">Activo</Form.Label>
+            <Form.Select
+              id="activo"
+              size="sm"
+              name="activo"
+              defaultValue={activos.activo}
+              onChange={handleInputChange}
+            >
+              {assets.map((asset) => (
+                <option key={asset.id}>{asset.name}</option>
+              ))}
+            </Form.Select>
+          </Form.Group>
         </Row>
         <Row className="mb-3">
           <Form.Group as={Col} controlId="formGridAssetName">
@@ -159,54 +147,69 @@ function AssetForm() {
             <Form.Control
               type="text"
               name="nombre"
-              placeholder="Name"
-              defaultValue={state != null ? state.assetData.name_asset : ""}
+              placeholder="Nombre..."
+              defaultValue={activos.nombre}
               onChange={handleInputChange}
-              required
+              {...register("nombre", {
+                required: {
+                  value: true,
+                  message: "Ingrese un nombre",
+                },
+              })}
             />
+            <span className="text-danger text-small d-block mb-2">
+              {errors.nombre && errors.nombre.message}
+            </span>
           </Form.Group>
           <Form.Group as={Col} controlId="formGridSerialNumber">
             <Form.Label>Nº de Serie</Form.Label>
             <Form.Control
               type="text"
               name="n_serie"
-              placeholder="Serial Number"
-              defaultValue={state != null ? state.assetData.serial_number : ""}
+              placeholder="Número de serie..."
+              defaultValue={activos.n_serie}
               onChange={handleInputChange}
-              required
+              {...register("n_serie", {
+                required: {
+                  value: true,
+                  message: "Ingrese el número de serie",
+                },
+              })}
             />
             <span className="text-danger text-small d-block mb-2">
-              {findAsset(datos.serialnumber)
-                ? "Ya existe un activo con este serial number"
-                : ""}
+              {errors.n_serie && errors.n_serie.message}
             </span>
           </Form.Group>
 
           <Form.Group as={Col} controlId="formGridStatus">
             <Form.Label>Estado</Form.Label>
             <Form.Select
-              id="status"
-              name="status"
-              aria-label="Default select example"
-              defaultValue={state != null ? state.assetData.status : ""}
+              id="estado"
+              name="estado"
+              aria-label="select estado"
+              defaultValue={activos.estado}
               onChange={handleInputChange}
             >
-              {status.map((status) => (
-                <option value={status.name}>{status.name}</option>
+              {status.map((status, index) => (
+                <option key={index} value={status.name}>
+                  {status.name}
+                </option>
               ))}
             </Form.Select>
           </Form.Group>
           <Form.Group as={Col} controlId="formGridLocation">
             <Form.Label>Localización</Form.Label>
             <Form.Select
-              id="location"
-              name="location"
-              aria-label="Default select example"
-              defaultValue={state != null ? state.assetData.location : ""}
+              id="localizacion"
+              name="localizacion"
+              aria-label="select localizacion"
+              defaultValue={activos.localizacion}
               onChange={handleInputChange}
             >
-              {location.map((location) => (
-                <option value={location.name}>{location.name}</option>
+              {location.map((location, index) => (
+                <option key={index} value={location.name}>
+                  {location.name}
+                </option>
               ))}
             </Form.Select>
           </Form.Group>
@@ -222,26 +225,28 @@ function AssetForm() {
               onChange={handleInputChange}
             />
           </Form.Group>
-          <Form.Group as={Col} sm={3} controlId="formGridEtiquetas">
-            <Form.Label>Etiquetas</Form.Label>
-            <Form.Select
-              multiple
-              defaultValue={state != null ? state.assetData.etiquetas : ""}
-              onChange={handleInputChange}
-            >
-              {etiquetas.map((etiqueta, index) => (
-                <option key={index}>{etiqueta.name}</option>
-              ))}
-            </Form.Select>
+          <Form.Group as={Col} sm={2} controlId="formGridEtiquetas">
+            <Form.Label>Etiquetas:</Form.Label>
+            {etiquetas.map((etiqueta) => (
+              <Form.Check
+                id={`${etiqueta.id}-${etiqueta.name}`}
+                key={etiqueta.name}
+                type="checkbox"
+                label={etiqueta.name}
+                name="etiquetas"
+                defaultValue={etiqueta.name}
+                onChange={handleInputChange}
+              />
+            ))}
           </Form.Group>
         </Row>
-        {datos.activo === "Monitor" && (
+        {activos.activo === "Monitor" && (
           <Row className="mb-3">
             <Form.Group as={Col} sm={4} controlId="formGridResolucion">
               <Form.Label>Resolución</Form.Label>
               <Form.Select
                 name="resolucion"
-                defaultValue={datos.resolucion}
+                defaultValue={activos.resolucion}
                 onChange={handleInputChange}
               >
                 {resolucion.map((resolucion, index) => (
@@ -250,29 +255,28 @@ function AssetForm() {
               </Form.Select>
             </Form.Group>
 
-            <Form.Group as={Col} sm={4} controlId="formGridTamaño">
+            <Form.Group as={Col} sm={4} controlId="formGridtamano">
               <Form.Label>Tamaño</Form.Label>
               <Form.Select
-                name="tamaño"
-                defaultValue={datos.tamaño}
+                name="tamano"
+                defaultValue={activos.tamano}
                 onChange={handleInputChange}
               >
-                {tamaño.map((tamaño, index) => (
-                  <option key={index}>{tamaño.name}</option>
+                {tamano.map((tamano, index) => (
+                  <option key={index}>{tamano.name}</option>
                 ))}
               </Form.Select>
             </Form.Group>
           </Row>
         )}
-        {datos.activo === "Pc" && (
+        {activos.activo === "Pc" && (
           <Row className="mb-3">
             <Form.Group as={Col} sm={2} controlId="formGridNucleos">
               <Form.Label>Núcleos</Form.Label>
               <Form.Control
                 type="number"
                 name="nucleos"
-                placeholder=""
-                defaultValue={state != null ? state.assetData.nucleos : "8"}
+                defaultValue={activos.nucleos}
                 onChange={handleInputChange}
                 required
               />
@@ -281,7 +285,7 @@ function AssetForm() {
               <Form.Label>Ram</Form.Label>
               <Form.Select
                 name="ram"
-                defaultValue={datos.ram}
+                defaultValue={activos.ram}
                 onChange={handleInputChange}
               >
                 {ram.map((ram, index) => (

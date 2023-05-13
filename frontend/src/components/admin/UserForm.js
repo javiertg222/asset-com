@@ -95,7 +95,7 @@ function UserForm() {
 
   return (
     <>
-      <Container className="m-50">
+      <Container className="m-5">
         {alerta &&
           AlertData(
             `Usuario ${
@@ -104,7 +104,7 @@ function UserForm() {
             "success"
           )}
 
-        <Form
+        <Form className="m-5"
           id="form-user"
           method="POST"
           onSubmit={handleSubmit(handleSubmitUser)}

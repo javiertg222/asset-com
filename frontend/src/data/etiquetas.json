@@ -1,8 +1,8 @@
 [
-  { "id": "1", "name": "Informática" },
+  { "id": "1", "name": "Informatica" },
   { "id": "2", "name": "Hardware" },
-  { "id": "3", "name": "Periféricos" },
-  { "id": "4", "name": "Tecnología" },
-  { "id": "5", "name": "Comunicación" },
+  { "id": "3", "name": "Perifericos" },
+  { "id": "4", "name": "Tecnologia" },
+  { "id": "5", "name": "Comunicacion" },
   { "id": "6", "name": "Software" }
 ]

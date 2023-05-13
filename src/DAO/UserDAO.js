@@ -53,9 +53,15 @@ const getUser = async (req, res, next) => {
     res.json(row);
   });
 };
+/**
+ * Obtener los usuarios de la aplicación
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 const getUsers = async (req, res, next) => {
   const sql =
-    "SELECT usuarios.id,nombre,apellido,apodo,email,password,rol,image,fecha FROM usuarios INNER JOIN perfil ON usuarios.id=perfil.id_usuario;";
+    "SELECT id,nombre,apellido,apodo,email,password,rol,image,fecha FROM usuarios INNER JOIN perfil ON usuarios.id=perfil.id_usuario;";
   const params = [];
   db.all(sql, params, (err, rows) => {
     if (err) {

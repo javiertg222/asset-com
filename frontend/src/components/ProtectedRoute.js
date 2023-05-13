@@ -1,9 +1,10 @@
 import { Navigate, Outlet } from "react-router-dom";
-const ProtectedRoute = ({ children, isAllowed, redirectTo = "/" }) => {
-  if (!isAllowed) {
-    return <Navigate to={redirectTo} />;
+
+const ProtectedRoute = ({isLogged}) => {
+  if (!isLogged) {
+    return <Navigate to={"/"} />;
   }
-  return children ? children : <Outlet />;
+  return <Outlet />;
 };
 
 export default ProtectedRoute;

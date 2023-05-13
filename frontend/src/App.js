@@ -17,43 +17,36 @@ import Backups from "./components/admin/Backups";
 import ProtectedRoute from "./components/ProtectedRoute";
 import storage from "./utils/storage";
 import decodeToken from "./utils/decodeToken";
+import { useState, useEffect } from "react";
 
 function App() {
+  const [isLogged, setIsLogged] = useState(false)
   const token = storage.get("token");
-  let user ={};
-  if (token!=null) {
-    user = decodeToken(storage.get("token"));
+  useEffect(() => {
+  if (token!==null) {
+    const user = decodeToken(token);
+    setIsLogged(true)
   }
-
+},[isLogged, token]);
   return (
     <>
       <div className="App">
         <NavBar />
         <Routes>
-          <Route element={<ProtectedRoute isAllowed={!!user.user} />}>
-            <Route index element={<LoginForm />}></Route>
-            <Route path="/login" element={<LoginForm />}></Route>
-            <Route path="/home" element={<Home />}></Route>
-            <Route path="/password" element={<ChangePass />}></Route>
-            <Route path="/logout" element={<Logout />}></Route>
-            <Route path="/admin/settings" element={<Settings />}></Route>
-            <Route
-              path="/admin"
-              element={
-                <ProtectedRoute
-                  isAllowed={!!user.user && user.user.rol.includes("admin")}
-                  redirectTo="/home"
-                >
-                  <Administration />
-                </ProtectedRoute>
-              }
-            ></Route>
-            <Route path="/admin/users" element={<UsersList />}></Route>
-            <Route path="/admin/users/form" element={<UserForm />}></Route>
-            <Route path="/admin/backups" element={<Backups />}></Route>
-            <Route path="/assets" element={<AssetsList />}></Route>
-            <Route path="/assets/form" element={<AssetForm />}></Route>
-            <Route path="/barcode" element={<BarCode />}></Route>
+          <Route index element={<LoginForm />} />
+          <Route path="/login" element={<LoginForm />} />
+          <Route element={<ProtectedRoute isLogged={isLogged} />}>
+            <Route path="/home" element={<Home />} />
+            <Route path="/password" element={<ChangePass />} />
+            <Route path="/logout" element={<Logout />} />
+            <Route path="/admin" element={<Administration />} />
+            <Route path="/admin/users" element={<UsersList />} />
+            <Route path="/admin/users/form" element={<UserForm />} />
+            <Route path="/admin/settings" element={<Settings />} />
+            <Route path="/admin/backups" element={<Backups />} />
+            <Route path="/assets" element={<AssetsList />} />
+            <Route path="/assets/form" element={<AssetForm />} />
+            <Route path="/barcode" element={<BarCode />} />
           </Route>
           <Route path="/404" element={<NotFound404 />} />
           <Route path="*" element={<Navigate to="/404" />} />
