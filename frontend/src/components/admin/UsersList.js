@@ -44,7 +44,7 @@ function UsersList() {
 
   return (
     <>
-      <Container className="m-50">
+      <Container className="m-6">
         <Row className="justify-content-md-center mt-3">
           <Col md="auto" lg="3">
             <Searcher searcherToParent={searcherToUserList} />
@@ -131,7 +131,7 @@ function UsersList() {
                       {user.fecha}
                     </td>
                     <td>
-                      <Button
+                      <Button size="sm"
                         variant="outline-success"
                         /**
                         Con el Hook usenavigate podemos pasar a una ruta un segundo parámetro como objeto.
@@ -145,7 +145,7 @@ function UsersList() {
                       >
                         Modificar
                       </Button>{" "}
-                      <Button
+                      <Button size="sm"
                         onClick={() => deleteUser(user.id)}
                         variant="outline-danger"
                       >

@@ -8,12 +8,12 @@ class Monitor extends Activo {
     image,
     resolucion,
     tamano,
-    activo
+    tipo
   ) {
-    super(nombre, n_serie, estado, localizacion, image);
+    super(nombre, n_serie, estado, localizacion, image, tipo);
     this.resolucion = resolucion;
     this.tamano = tamano;
-    this.activo = activo;
+  
   }
 }
 

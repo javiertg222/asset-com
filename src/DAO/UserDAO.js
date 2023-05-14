@@ -61,7 +61,7 @@ const getUser = async (req, res, next) => {
  */
 const getUsers = async (req, res, next) => {
   const sql =
-    "SELECT id,nombre,apellido,apodo,email,password,rol,image,fecha FROM usuarios INNER JOIN perfil ON usuarios.id=perfil.id_usuario;";
+    "SELECT usuarios.id,nombre,apellido,apodo,email,password,rol,image,fecha FROM usuarios INNER JOIN perfil ON usuarios.id=perfil.id_usuario;";
   const params = [];
   db.all(sql, params, (err, rows) => {
     if (err) {

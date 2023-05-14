@@ -16,7 +16,7 @@ function AssetForm() {
    Recupero con el hook useLocation el activo enviado con useNavigate 
    */
   const { state } = useLocation();
-  const [alerta, setAlerta] = useState(null);
+  const [alerta, setAlerta] = useState(false);
 
   //VALIDACIONES
   const {
@@ -26,7 +26,7 @@ function AssetForm() {
     handleSubmit,
   } = useForm({ mode: "onChange" });
   const [activos, setActivos] = useState({
-    activo: state != null ? state.assetData.activo : "",
+    tipo: state != null ? state.assetData.tipo : "",
     nombre: state != null ? state.assetData.nombre : "",
     n_serie: state != null ? state.assetData.n_serie : "",
     estado: state != null ? state.assetData.estado : "",
@@ -86,7 +86,7 @@ function AssetForm() {
     let metodo = "";
 
     if (state != null) {
-      url = `http://localhost:3001/activo`;
+      url = `http://localhost:3001/activo/${state.assetData.id}`;
       metodo = "PUT";
     } else {
       url = `http://localhost:3001/activo`;
@@ -98,10 +98,12 @@ function AssetForm() {
     fetch(url, { method: metodo, body: formData })
       .then((res) => {
         if (res.ok) {
-          console.log("Todo bien");
           setAlerta(true);
+          return res.json();
+        } else if (res.status === 404) {
+          return Promise.reject("error 404");
         } else {
-          console.log("Respuesta de red OK pero respuesta de HTTP no OK");
+          return Promise.reject("Otro error: " + res.status);
         }
       })
       .catch((error) => console.log(error));
@@ -112,12 +114,11 @@ function AssetForm() {
 
   return (
     <Container className="m-5">
-      {alerta
-        ? AlertData(
-            `Activo ${state == null ? "añadido" : "modificado"} correctamente!`,
-            "success"
-          )
-        : null}
+      {alerta &&
+        AlertData(
+          `Activo ${state == null ? "añadido" : "modificado"} correctamente!`,
+          "success"
+        )}
       <Form
         className="m-5"
         id="form-asset"
@@ -126,13 +127,13 @@ function AssetForm() {
       >
         <h3>{state == null ? "Crear" : "Modificar"} Activo:</h3>
         <Row className="mb-3">
-          <Form.Group as={Col} xs={3} controlId="formGridActivo">
+          <Form.Group as={Col} xs={3} controlId="formGridTipo">
             <Form.Label variant="primary">Activo</Form.Label>
             <Form.Select
-              id="activo"
+              id="tipo"
               size="sm"
-              name="activo"
-              defaultValue={activos.activo}
+              name="tipo"
+              defaultValue={activos.tipo}
               onChange={handleInputChange}
             >
               {assets.map((asset) => (
@@ -225,22 +226,26 @@ function AssetForm() {
               onChange={handleInputChange}
             />
           </Form.Group>
-          <Form.Group as={Col} sm={2} controlId="formGridEtiquetas">
-            <Form.Label>Etiquetas:</Form.Label>
-            {etiquetas.map((etiqueta) => (
-              <Form.Check
-                id={`${etiqueta.id}-${etiqueta.name}`}
-                key={etiqueta.name}
-                type="checkbox"
-                label={etiqueta.name}
-                name="etiquetas"
-                defaultValue={etiqueta.name}
-                onChange={handleInputChange}
-              />
-            ))}
-          </Form.Group>
+          {state == null ? (
+            <Form.Group as={Col} sm={2} controlId="formGridEtiquetas">
+              <Form.Label>Etiquetas:</Form.Label>
+              {etiquetas.map((etiqueta) => (
+                <Form.Check
+                  id={`${etiqueta.id}-${etiqueta.name}`}
+                  key={etiqueta.name}
+                  type="checkbox"
+                  label={etiqueta.name}
+                  name="etiquetas"
+                  defaultValue={etiqueta.name}
+                  onChange={handleInputChange}
+                />
+              ))}
+            </Form.Group>
+          ) : (
+            ""
+          )}
         </Row>
-        {activos.activo === "Monitor" && (
+        {activos.tipo === "Monitor" && (
           <Row className="mb-3">
             <Form.Group as={Col} sm={4} controlId="formGridResolucion">
               <Form.Label>Resolución</Form.Label>
@@ -256,7 +261,7 @@ function AssetForm() {
             </Form.Group>
 
             <Form.Group as={Col} sm={4} controlId="formGridtamano">
-              <Form.Label>Tamaño</Form.Label>
+              <Form.Label>Tamaño(pulgadas)</Form.Label>
               <Form.Select
                 name="tamano"
                 defaultValue={activos.tamano}
@@ -269,7 +274,7 @@ function AssetForm() {
             </Form.Group>
           </Row>
         )}
-        {activos.activo === "Pc" && (
+        {activos.tipo === "Pc" && (
           <Row className="mb-3">
             <Form.Group as={Col} sm={2} controlId="formGridNucleos">
               <Form.Label>Núcleos</Form.Label>
@@ -282,7 +287,7 @@ function AssetForm() {
               />
             </Form.Group>
             <Form.Group as={Col} sm={2} controlId="formGridRam">
-              <Form.Label>Ram</Form.Label>
+              <Form.Label>Ram(GB)</Form.Label>
               <Form.Select
                 name="ram"
                 defaultValue={activos.ram}

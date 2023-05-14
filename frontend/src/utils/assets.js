@@ -3,8 +3,8 @@
  * @param {*} url 
  * @param {*} setAssets
  */
-const getAssets = (url, setAssets)=>{
-    fetch(url)
+const getAssets = async (url, setAssets)=>{
+    await fetch(url)
         .then((res) => res.json())
         .then((data) => setAssets(data))
         .catch((error) => console.log(error));
@@ -12,9 +12,10 @@ const getAssets = (url, setAssets)=>{
   /**
    * Método para borrar un activo
    * @param {id asset} id 
+   *  @param {tipo asset} tipo
    */
-  const deleteAsset = (id)=>{
-    fetch(`http://localhost:3001/activo/${id}`, { method: "DELETE" })
+  const deleteAsset = (id, tipo)=>{
+    fetch(`http://localhost:3001/activo/${id}/${tipo}`, { method: "DELETE" })
         .then((res) => {
           console.log(res.json());
         })

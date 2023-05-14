@@ -9,6 +9,7 @@ const usuarios = require("./src/routes/rutasUser");
 const activos = require("./src/routes/rutasAsset");
 const configuracion = require("./src/routes/rutasConfiguration");
 const login = require("./src/routes/rutasLogin");
+const estadisticas = require("./src/routes/rutasEstadisticas");
 const miscelanea = require("./src/routes/rutasMiscelanea");
 //const auth = require("./middlewares/auth");
 //Variable de entorno (puerto de escucha del servidor)
@@ -33,6 +34,7 @@ app.use(usuarios);
 app.use(activos);
 app.use(configuracion);
 app.use(login);
+app.use(estadisticas)
 app.use(miscelanea);
 
 /**

@@ -9,12 +9,12 @@ class Pc extends Activo {
     image,
     nucleos,
     ram,
-    activo
+    tipo
   ) {
-    super(nombre, n_serie, estado, localizacion, image);
+    super(nombre, n_serie, estado, localizacion, image, tipo);
     this.nucleos = nucleos;
     this.ram = ram;
-    this.activo = activo;
+
   }
 }
 module.exports = Pc;

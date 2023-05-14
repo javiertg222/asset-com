@@ -25,7 +25,7 @@ function AssetsList() {
     if (asset.estado === "Alta") {
       return "#198754";
     }
-    if (asset.estado === "Pendiente") {
+    if (asset.estado === "Mantenimiento") {
       return "#e4a11b ";
     }
     if (asset.estado === "Baja") {
@@ -42,7 +42,8 @@ function AssetsList() {
   const searcherToAssets = (datosSearch) => {
     setSearch(datosSearch);
   };
-  const result = !search
+
+  let result = !search
     ? assets
     : assets.filter(
         (asset) =>
@@ -60,7 +61,7 @@ function AssetsList() {
 
   return (
     <>
-      <Container className="m-50">
+      <Container className="m-6">
         <Row className="justify-content-md-center mt-3">
           <Col md="auto" lg="3">
             <Searcher searcherToParent={searcherToAssets} />
@@ -86,7 +87,7 @@ function AssetsList() {
             <FaFilePdf size={"1.5em"} />
           </Button>
         </ButtonToolbar>
-        <Table responsive hover>
+        <Table hover responsive size="sm">
           <thead>
             <tr>
               <th>Id</th>
@@ -96,9 +97,9 @@ function AssetsList() {
               <th>Estado</th>
               <th>Localización</th>
               <th>Resolución</th>
-              <th>Tamaño</th>
+              <th>Tamaño(")</th>
               <th>Núcleos</th>
-              <th>Ram</th>
+              <th>Ram(GB)</th>
               <th>Tipo</th>
               <th>Fecha Creación/Modificación</th>
               <th>Código de Barras</th>
@@ -106,14 +107,14 @@ function AssetsList() {
             </tr>
           </thead>
           <tbody>
-            {!assets ? (
+            {!result ? (
               <tr>
                 <td>{AlertData("No hay activos para mostrar.", "warning")}</td>
               </tr>
             ) : (
-              result.map((asset, index) => (
+              result.map((asset) => (
                 <>
-                  <tr key={index}>
+                  <tr key={asset.id}>
                     <td>{asset.id}</td>
                     <td>
                       <Image
@@ -130,14 +131,14 @@ function AssetsList() {
                     <td>{asset.tamano}</td>
                     <td>{asset.nucleos}</td>
                     <td>{asset.ram}</td>
-                    <td>{asset.id_m || asset.id_p}</td>
+                    <td>{asset.tipo}</td>
                     <td>{asset.fecha}</td>
                     <td>
                       <Button
                         variant="light"
                         onClick={() =>
                           navigate("/barcode", {
-                            state: { assetData: asset.serial_number },
+                            state: { assetData: asset.n_serie },
                           })
                         }
                       >
@@ -145,7 +146,7 @@ function AssetsList() {
                       </Button>
                     </td>
                     <td>
-                      <Button
+                      <Button size="sm"
                         variant="outline-success"
                         onClick={() =>
                           navigate("/assets/form", {
@@ -155,8 +156,8 @@ function AssetsList() {
                       >
                         Modificar
                       </Button>{" "}
-                      <Button
-                        onClick={() => deleteAsset(asset.id)}
+                      <Button size="sm"
+                        onClick={() => deleteAsset(asset.id, asset.tipo)}
                         variant="outline-danger"
                       >
                         Borrar

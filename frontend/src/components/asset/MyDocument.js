@@ -32,7 +32,7 @@ function MyDocument(props) {
           <Text style={styles.head}>Activos</Text>
           <View style={styles.list}>
             {assets.map((asset, index) => (
-              <Text style={styles.list} key={index}>{`${asset.id_asset} ${asset.name_asset} ${asset.serial_number} ${asset.status} ${asset.location} ${asset.fecha} `}</Text>
+              <Text style={styles.list} key={index}>{`${asset.id} ${asset.nombre} ${asset.n_serie} ${asset.estado} ${asset.localizacion} ${asset.fecha} `}</Text>
             ))}
           </View>
         </View>

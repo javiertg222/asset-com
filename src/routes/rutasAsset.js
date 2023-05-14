@@ -25,8 +25,8 @@ router.get("/activo", controllerAsset.GET_ASSET);
 /**
  * Modificar un activo
  */
-router.put("/activo", upload, controllerAsset.UPDATE_ASSET);
+router.put("/activo/:id", upload, controllerAsset.UPDATE_ASSET);
 
-router.delete("/activo", controllerAsset.DELETE_ASSET);
+router.delete("/activo/:id/:tipo", controllerAsset.DELETE_ASSET);
 
 module.exports = router;

@@ -7,12 +7,7 @@ const router = express.Router();
 //MISCELLANEOUS ENDPOINTS
 
 
-  /**
-   * Estadísticas
-   */
-  router.get("/estadisticas", (req, res, next) => {
-    getEstadisticas(req, res);
-  });
+ 
   /**
    * Backups
    */

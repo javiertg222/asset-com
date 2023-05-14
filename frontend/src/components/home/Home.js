@@ -1,10 +1,19 @@
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, Title } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
-import { Card, Container, Row, Col, Alert, Spinner } from "react-bootstrap";
+import {
+  Card,
+  Container,
+  Row,
+  Col,
+  Alert,
+  Spinner,
+  CardGroup,
+} from "react-bootstrap";
 import CardHome from "./CardHome";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "../../css/app.css";
+import getEstadisticas from "../../utils/estadisticas";
 
 ChartJS.register(ArcElement, Tooltip, Legend, Title);
 
@@ -12,14 +21,11 @@ function Home() {
   const [loanding, setLoanding] = useState(true);
   const [estadisticas, setEstadisticas] = useState([]);
   useEffect(() => {
-    fetch("http://localhost:3001/api/estadisticas")
-      .then((res) => res.json())
-      .then((data) => {
-        setEstadisticas(data);
-        setLoanding(false);
-      })
-      .catch((error) => console.log(error));
+    getEstadisticas("http://localhost:3001/estadisticas", setEstadisticas);
+    setLoanding(false);
   }, []);
+
+  console.log(estadisticas);
 
   if (loanding) {
     return (
@@ -43,11 +49,11 @@ function Home() {
         {
           label: ["Activos"],
           data: [
-            estadisticas[1].cant,
-            estadisticas[0].cant,
-            estadisticas[2].cant,
+            estadisticas.baja,
+            estadisticas.alta,
+            estadisticas.mantenimiento,
           ],
-          backgroundColor: ["#dc3545", "#198754", "#e4a11b "],
+          backgroundColor: ["#dc3545", "#198754", "#e4a11b"],
           hoverOffset: 4,
         },
       ],
@@ -56,13 +62,18 @@ function Home() {
     const datos = [
       {
         title: "Usuarios",
-        color: "info",
-        counter: estadisticas[3].cant,
+        color: "#dc3545",
+        counter: estadisticas.usuarios,
       },
       {
         title: "Activos",
-        color: "success",
-        counter: estadisticas[0].total,
+        color: "#198754",
+        counter: estadisticas.activos,
+      },
+      {
+        title: "Localización",
+        color: "#e4a11b",
+        counter: estadisticas.empresa,
       },
     ];
     return (
@@ -82,22 +93,25 @@ function Home() {
                 </Card.Body>
               </Card>
             </Col>
-            {datos.map((dato, index) => (
-              <Col key={index}>
-                <Link
-                  className="link"
-                  to={dato.title === "Usuarios" ? "/admin/users" : "assets"}
-                >
-                  <CardHome
-                    data={{
-                      title: dato.title,
-                      color: dato.color,
-                      counter: dato.counter,
-                    }}
-                  />
-                </Link>
-              </Col>
-            ))}
+            <Col sm="8">
+              <CardGroup>
+                {datos.map((dato) => (
+                  <Card.Link
+                    as={Link}
+                    className="link"
+                    to={dato.title === "Usuarios" ? "/admin/users" : "/assets"}
+                  >
+                    <CardHome
+                      data={{
+                        title: dato.title,
+                        color: dato.color,
+                        counter: dato.counter,
+                      }}
+                    />
+                  </Card.Link>
+                ))}
+              </CardGroup>
+            </Col>
           </Row>
         </Container>
       </>

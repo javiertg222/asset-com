@@ -5,7 +5,6 @@ let db = new sqlite3.Database("./src/bbdd/assetcom.sqlite3", (error) => {
     console.error(error.message);
     throw error;
   } else {
-   
     //Crear la tabla configuración
     db.run(
       `CREATE TABLE IF NOT EXISTS "configuracion" (
@@ -25,7 +24,7 @@ let db = new sqlite3.Database("./src/bbdd/assetcom.sqlite3", (error) => {
         )`
     );
 
-    //Crear la tabla usuario
+    //Crear la tabla usuarios
     db.run(
       `CREATE TABLE IF NOT EXISTS "usuarios" (
         "id"	INTEGER,
@@ -44,15 +43,16 @@ let db = new sqlite3.Database("./src/bbdd/assetcom.sqlite3", (error) => {
       "id"	INTEGER,
       "nombre"	TEXT,
       "n_serie"	TEXT,
-      "estado"	TEXT DEFAULT 'alta' CHECK("estado" IN ('Alta', 'Mantenimiento', 'Baja')),
-      "localizacion"	TEXT DEFAULT 'empresa' CHECK("localizacion" IN ('Empresa', 'Tránsito', 'Cliente')),
-      "imagen"	TEXT,
+      "estado"	TEXT DEFAULT 'Alta' CHECK("estado" IN ('Alta', 'Mantenimiento', 'Baja')),
+      "localizacion"	TEXT DEFAULT 'Empresa' CHECK("localizacion" IN ('Empresa', 'Transito', 'Cliente')),
+      "image"	TEXT,
       "fecha"	TEXT,
       "id_usuario"	INTEGER,
+      "tipo"	TEXT CHECK("tipo" IN ('Pc', 'Monitor')),
       FOREIGN KEY("id_usuario") REFERENCES "usuarios"("id"),
       PRIMARY KEY("id" AUTOINCREMENT)
     )`);
-    
+
     //Crear la tabla perfil
     db.run(
       `CREATE TABLE IF NOT EXISTS "perfil" (
@@ -70,28 +70,32 @@ let db = new sqlite3.Database("./src/bbdd/assetcom.sqlite3", (error) => {
 
     db.run(
       `CREATE TABLE IF NOT EXISTS "monitor" (
-        "id"	INTEGER,
+        "id_a"	INTEGER,
         "resolucion"	TEXT,
-        "tamaño"	TEXT,
-        FOREIGN KEY("id") REFERENCES "activo"("id") ON UPDATE CASCADE ON DELETE CASCADE,
-        PRIMARY KEY("id")
-      );`
+        "tamano"	TEXT,
+        FOREIGN KEY("id_a") REFERENCES "activo"("id") ON UPDATE CASCADE ON DELETE CASCADE,
+        PRIMARY KEY("id_a")
+      )`
     );
     //Crear la tabla pc
     db.run(`CREATE TABLE IF NOT EXISTS "pc" (
-      "id"	INTEGER,
+      "id_a"	INTEGER,
       "nucleos"	TEXT,
       "ram"	TEXT,
-      FOREIGN KEY("id") REFERENCES "activo"("id") ON UPDATE CASCADE ON DELETE CASCADE,
-      PRIMARY KEY("id")
+      FOREIGN KEY("id_a") REFERENCES "activo"("id") ON UPDATE CASCADE ON DELETE CASCADE,
+      PRIMARY KEY("id_a")
     )`);
     //Crear la tabla activo-etiqueta
     db.run(`CREATE TABLE IF NOT EXISTS "activo_etiqueta" (
       "id_activo"	INTEGER,
       "id_etiqueta"	INTEGER,
-      FOREIGN KEY("id_etiqueta") REFERENCES "etiqueta"("id") ON UPDATE CASCADE ON DELETE CASCADE,
-      FOREIGN KEY("id_activo") REFERENCES "activo" ON UPDATE CASCADE ON DELETE CASCADE
+      FOREIGN KEY("id_activo") REFERENCES "activo" ON UPDATE CASCADE ON DELETE CASCADE,
+      FOREIGN KEY("id_etiqueta") REFERENCES "etiqueta"("id") ON UPDATE CASCADE ON DELETE CASCADE
     )`);
+
+    //Insertar los datos de la tabla etiqueta
+
+    // db.run(`INSERT INTO etiqueta('nombre') VALUES ('Informatica'), ('Hardware'),('Perifericos'),('Tecnologia'),('Comunicacion'),('Software')`);
 
     console.log("Connected to the SQLite database.");
   }
