@@ -23,7 +23,7 @@ function App() {
   const [isLogged, setIsLogged] = useState(false)
   const token = storage.get("token");
   useEffect(() => {
-  if (token!==null) {
+  if (token!=null) {
     const user = decodeToken(token);
     setIsLogged(true)
   }

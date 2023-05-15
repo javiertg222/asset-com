@@ -73,7 +73,11 @@ function Home() {
       {
         title: "Localización",
         color: "#e4a11b",
-        counter: estadisticas.empresa,
+        counter: <ul>
+          <li>Empresa: {estadisticas.empresa}</li>
+          <li>Tránsito: {estadisticas.transito}</li>
+          <li>Cliente: {estadisticas.cliente}</li>
+        </ul>
       },
     ];
     return (

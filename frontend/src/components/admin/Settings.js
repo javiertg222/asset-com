@@ -2,7 +2,7 @@ import { Button, Container, Col, Form, Row } from "react-bootstrap";
 import AlertData from "../AlertData";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
-import { RiHome4Line } from "react-icons/ri";
+
 
 function Settings() {
   const [alerta, setAlerta] = useState(false);
