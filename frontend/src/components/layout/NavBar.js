@@ -1,16 +1,10 @@
 import { Link } from "react-router-dom";
 import { RiAdminFill } from "react-icons/ri";
-import {
-  Container,
-  Nav,
-  Navbar,
-  NavDropdown,
-  Image,
-  Row,
-  Col,
-} from "react-bootstrap";
+import { Container, Nav, Navbar, NavDropdown, Row, Col } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import decodeToken from "../../utils/decodeToken";
+import { getConfiguration } from "../../utils/configuration";
+import Personalizacion from "./Personalizacion";
 
 function NavBar() {
   //Decodificar el token para utilixar el nombre de usuario
@@ -19,29 +13,8 @@ function NavBar() {
 
   const [config, setConfig] = useState([]);
   useEffect(() => {
-    fetch("http://localhost:3001/api/settings")
-      .then((res) => res.json())
-      .then((data) => setConfig(data))
-      .catch((error) => console.log(error));
+    getConfiguration("http://localhost:3001/configuracion", setConfig);
   }, []);
-
-  /**
-   * Espacio para la imagen corporativa
-   * @returns
-   */
-
-  const Personalizacion = () => {
-    return (
-      <Col md="auto">
-        <Image
-          src={config[0].image}
-          style={{ width: 150, height: 35 }}
-          thumbnail
-          alt="imagen corporativa"
-        />
-      </Col>
-    );
-  };
 
   return (
     <Navbar expand="lg" bg="primary" variant="dark">
@@ -74,9 +47,9 @@ function NavBar() {
         </Navbar.Collapse>
         <Row>
           <Col md="auto" style={{ color: "white", fontSize: "1.3em" }}>
-            {config.length !== 0 ? config[0].title : ""}
+            {config.length !== 0 && config[0].titulo ? config[0].titulo : ""}
           </Col>
-          {config.length !== 0 ? <Personalizacion /> : null}
+          {config.length !== 0 && config[0].image ? <Personalizacion data={config} />:""}
           <Col md="auto">
             <Link to="/admin" title="Administración">
               <RiAdminFill style={{ color: "white" }} size={"2em"} />

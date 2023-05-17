@@ -16,11 +16,11 @@ router.get("/configuracion", controllerConfiguration.GET_CONFIGURATION);
 /**
  * Añadir Configuración
  */
-router.post("/config", upload, controllerConfiguration.CREATE_CONFIGURATION);
+router.post("/configuracion", upload, controllerConfiguration.CREATE_CONFIGURATION);
 /**
  * Modificar la configuración
  */
 
-router.put("/config", upload, controllerConfiguration.UPDATE_CONFIGURATION);
+router.put("/configuracion/:id", upload, controllerConfiguration.UPDATE_CONFIGURATION);
 
 module.exports = router;

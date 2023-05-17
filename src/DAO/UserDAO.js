@@ -202,10 +202,16 @@ const login = async (req, res) => {
     email: req.body.email,
     password: req.body.password,
   };
-
+  let sql= "SELECT usuarios.id, email,password, rol, nombre, apodo FROM usuarios INNER JOIN perfil ON usuarios.id=perfil.id_usuario"
+  //USUARIO DE PRUEBA/INICIO
+  
+  if (credentials.email==="admin@admin.it") {
+    sql="SELECT id, email,password, rol FROM usuarios"
+  }
+  
   //Recupero todos los datos de los usuarios para comprobar que el email y password existen.
   db.all(
-    "SELECT usuarios.id, email,password, rol, nombre, apodo FROM usuarios INNER JOIN perfil ON usuarios.id=perfil.id_usuario",
+   sql,
     async (err, users) => {
       if (err) {
         console.log(err.message);

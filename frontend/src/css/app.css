@@ -9,6 +9,10 @@
   font-size: 5rem;
 
 }
+.card-counter-localizacion{
+  text-align: center;
+  font-size: 1rem;
+}
 
 .link {
   text-decoration: none;

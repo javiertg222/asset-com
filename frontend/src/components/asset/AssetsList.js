@@ -146,7 +146,7 @@ function AssetsList() {
                       </Button>
                     </td>
                     <td>
-                      <Button size="sm"
+                      <Button className="mb-1" size="sm"
                         variant="outline-success"
                         onClick={() =>
                           navigate("/assets/form", {
@@ -155,7 +155,7 @@ function AssetsList() {
                         }
                       >
                         Modificar
-                      </Button>{" "}
+                      </Button>
                       <Button size="sm"
                         onClick={() => deleteAsset(asset.id, asset.tipo)}
                         variant="outline-danger"

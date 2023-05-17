@@ -8,6 +8,7 @@ import {
   Alert,
   Spinner,
   CardGroup,
+  ListGroup,
 } from "react-bootstrap";
 import CardHome from "./CardHome";
 import { useState, useEffect } from "react";
@@ -24,8 +25,6 @@ function Home() {
     getEstadisticas("http://localhost:3001/estadisticas", setEstadisticas);
     setLoanding(false);
   }, []);
-
-  console.log(estadisticas);
 
   if (loanding) {
     return (
@@ -73,11 +72,19 @@ function Home() {
       {
         title: "Localización",
         color: "#e4a11b",
-        counter: <ul>
-          <li>Empresa: {estadisticas.empresa}</li>
-          <li>Tránsito: {estadisticas.transito}</li>
-          <li>Cliente: {estadisticas.cliente}</li>
-        </ul>
+        counter: (
+          <ListGroup>
+            <ListGroup.Item action variant="dark">
+              Empresa: {estadisticas.empresa}
+            </ListGroup.Item>
+            <ListGroup.Item action variant="dark">
+              Tránsito: {estadisticas.transito}
+            </ListGroup.Item>
+            <ListGroup.Item action variant="dark">
+              Cliente: {estadisticas.cliente}
+            </ListGroup.Item>
+          </ListGroup>
+        ),
       },
     ];
     return (
@@ -99,8 +106,9 @@ function Home() {
             </Col>
             <Col sm="8">
               <CardGroup>
-                {datos.map((dato) => (
+                {datos.map((dato, index) => (
                   <Card.Link
+                    key={index}
                     as={Link}
                     className="link"
                     to={dato.title === "Usuarios" ? "/admin/users" : "/assets"}

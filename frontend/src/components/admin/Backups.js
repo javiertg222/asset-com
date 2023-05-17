@@ -11,7 +11,7 @@ function Backups() {
  * @param {*} e 
  */
   const handleBackup = (e) => {
-    fetch("http://localhost:3001/api/backup")
+    fetch("http://localhost:3001/backups")
       .then((response) => response.json())
       .then((datos) => {
         setBackup(datos);

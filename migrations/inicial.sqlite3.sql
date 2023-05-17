@@ -64,5 +64,5 @@ CREATE TABLE IF NOT EXISTS "activo" (
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
 INSERT INTO etiqueta('nombre') VALUES ('Informatica'), ('Hardware'),('Perifericos'),('Tecnologia'),('Comunicacion'),('Software')
-
+INSERT INTO usuarios (email, password, rol) VALUES ('admin@admin.admin', '$2a$10$VGg5QCk.PP6vnK5fOuSWQeqj1UuUz2ODcNsxeG3Vdyo0rEmw52Uo6', 'admin')
 COMMIT;

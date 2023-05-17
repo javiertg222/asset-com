@@ -10,7 +10,7 @@ const activos = require("./src/routes/rutasAsset");
 const configuracion = require("./src/routes/rutasConfiguration");
 const login = require("./src/routes/rutasLogin");
 const estadisticas = require("./src/routes/rutasEstadisticas");
-const miscelanea = require("./src/routes/rutasMiscelanea");
+const backups = require("./src/routes/rutasBackups");
 //const auth = require("./middlewares/auth");
 //Variable de entorno (puerto de escucha del servidor)
 const PORT = process.env.PORT;
@@ -21,7 +21,6 @@ app.use(express.json());
 app.use(cors());
 //Mapear las rutas de las imágenes subidas a express
 app.use("/public", express.static(`${__dirname}/src/uploads`));
-
 
 //RUTA DE PRUEBA DEL SERVIDOR
 router.get("/", (req, res) =>(
@@ -35,7 +34,7 @@ app.use(activos);
 app.use(configuracion);
 app.use(login);
 app.use(estadisticas)
-app.use(miscelanea);
+app.use(backups);
 
 /**
  * INICIAR EL SERVIDOR

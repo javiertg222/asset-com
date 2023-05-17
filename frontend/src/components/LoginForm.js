@@ -46,16 +46,15 @@ function LoginForm() {
       .then((res) => res.json())
       .then((data) => {
         setMensaje(data.mensaje);
-        if (data.token) {
-          //Guardamos el token en el navegador
-          storage.set("token", data.token);
-          //Redirigimos a la home
+        //Guardamos el token en el navegador
+        const token = storage.set("token", data.token);
+        console.log(token )
+        if (token) {
           navigate("/home");
         }
       })
       .catch((error) => console.log(error));
   }
-
   return (
     <Stack gap={2} className="col-md-3 mx-auto m-3">
       <Card className="text-center">

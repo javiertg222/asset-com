@@ -2,18 +2,11 @@ import { Button, Container, Col, Form, Row } from "react-bootstrap";
 import AlertData from "../AlertData";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
-
+import { getConfiguration } from "../../utils/configuration";
 
 function Settings() {
   const [alerta, setAlerta] = useState(false);
   const [config, setConfig] = useState([]);
-
-  useEffect(() => {
-    fetch("http://localhost:3001/api/settings")
-      .then((res) => res.json())
-      .then((data) => setConfig(data))
-      .catch((error) => console.log(error));
-  }, []);
 
   //VALIDACIONES
   const {
@@ -22,19 +15,21 @@ function Settings() {
     handleSubmit,
     formState: { errors },
   } = useForm({ mode: "onChange" });
-  const [datos, setDatos] = useState({ title: "", image: "" });
+  const [datos, setDatos] = useState({
+    titulo: "",
+    image: "",
+  });
   /**
    * Recoge los datos del evento onChange del formulario
    * @param {*} e
    */
   const handleInputChange = (e) => {
-    // console.log(e.target.name);
-    // console.log(e.target.value);
     setDatos({
       ...datos,
       [e.target.name]: e.target.value,
     });
   };
+
   const handleSubmitConfig = (datos, e) => {
     e.preventDefault();
     // LEER DATOS DEL FORMULARIO
@@ -43,15 +38,15 @@ function Settings() {
     const formData = new FormData(form);
     formData.append("datos", Object.entries(formData.entries()));
 
-    //Variables para modificar los parámetros del fetch según sea añadir/modificar configuración 
+    //Variables para modificar los parámetros del fetch según sea añadir/modificar configuración
     let url = "";
     let metodo = "";
 
     if (config.length !== 0) {
-      url = `http://localhost:3001/api/setting/update/${config[0].id}`;
+      url = `http://localhost:3001/configuracion/${config[0].id}`;
       metodo = "PUT";
     } else {
-      url = "http://localhost:3001/api/setting";
+      url = "http://localhost:3001/configuracion";
       metodo = "POST";
     }
 
@@ -76,9 +71,13 @@ function Settings() {
     e.target.reset();
   };
 
+  useEffect(() => {
+    getConfiguration("http://localhost:3001/configuracion", setConfig);
+  }, []);
+
   return (
     <Container className="m-5">
-      {alerta ? AlertData("Configuración añadida!", "success") : null}
+      {alerta && AlertData("Configuración añadida!", "success")}
 
       <Form
         id="form-config"
@@ -92,13 +91,11 @@ function Settings() {
               <Form.Label>Título:</Form.Label>
               <Form.Control
                 type="text"
-                name="title"
+                name="titulo"
                 placeholder="Título..."
-                defaultValue={
-                  config.length !== 0 ? config[0].title : datos.title
-                }
+                defaultValue={config.length !== 0 && config[0].titulo ? config[0].titulo : datos.titulo}
                 onChange={handleInputChange}
-                {...register("title", {
+                {...register("titulo", {
                   required: {
                     value: true,
                     message: "Ingrese un título",
@@ -110,7 +107,7 @@ function Settings() {
                 })}
               />
               <span className="text-danger text-small d-block mb-2">
-                {errors.title && errors.title.message}
+                {errors.titulo && errors.titulo.message}
               </span>
             </Form.Group>
           </Col>

@@ -1,7 +1,7 @@
 import NavBar from "./components/layout/NavBar";
 import Footer from "./components/layout/Footer";
 import Home from "./components/home/Home";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate} from "react-router-dom";
 import LoginForm from "./components/LoginForm";
 import Logout from "./components/Logout";
 import Settings from "./components/admin/Settings";
@@ -22,9 +22,11 @@ import { useState, useEffect } from "react";
 function App() {
   const [isLogged, setIsLogged] = useState(false)
   const token = storage.get("token");
+  const [user, setUser] = useState(null)
+  console.log(token)
   useEffect(() => {
-  if (token!=null) {
-    const user = decodeToken(token);
+  if (token) {
+    setUser(decodeToken(token));
     setIsLogged(true)
   }
 },[isLogged, token]);
