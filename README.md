@@ -54,6 +54,8 @@ http://localhost:3001
 
 1. Clonar el proyecto y configurar el archivo .env con las variables. Ver el archivo de ejemplo [.env.example](https://github.com/javiertg222/assetcom/blob/main/.env.example)
 
+2. Cuando se ejecute la aplicación se crearán la BBDD y las tablas, pero será necesario ejecutar los dos comandos INSERT que hay en la carpeta migrations para meter los valores de las etiquetas y crear un usuario admin de inicio con el que poder loguearse (admin@admin.it/admin)
+
 2. En la raiz del proyecto ejecutar:
 
 `npm run app` (levanta el servidor y el cliente simultáneamente)

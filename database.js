@@ -96,7 +96,8 @@ let db = new sqlite3.Database("./src/bbdd/assetcom.sqlite3", (error) => {
     //Insertar los datos de la tabla etiqueta
 
     // db.run(`INSERT INTO etiqueta('nombre') VALUES ('Informatica'), ('Hardware'),('Perifericos'),('Tecnologia'),('Comunicacion'),('Software')`);
-
+    //Usuario de inicio por primera vez en la aplicación admin@admin.it/admin  a partir de este se pueden crear otros
+    //db.run(`INSERT INTO usuarios (email, password, rol) VALUES ('admin@admin.it', '$2a$10$VGg5QCk.PP6vnK5fOuSWQeqj1UuUz2ODcNsxeG3Vdyo0rEmw52Uo6', 'admin')`)
     console.log("Connected to the SQLite database.");
   }
 });

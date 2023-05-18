@@ -3,8 +3,8 @@ const path =require('path')
 const backupController = async (req, res, next) => {
   try {
     await copyFile(
-      "bbdd/hola.txt",
-      `backups/${new Date()}-backup.txt`
+      "../bbdd/hola.txt",
+      `../backups/${new Date()}-backup.txt`
     );
     res.json({ ok: "El archivo se ha copiado en destino" });
   } catch {

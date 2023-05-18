@@ -15,7 +15,7 @@ function LoginForm() {
   //Mensajes repuesta validación servidor
   const [mensaje, setMensaje] = useState("");
   const navigate = useNavigate();
-
+  
   /**
    * Recoge los datos del evento onChange del formulario
    * @param {*} e
@@ -26,7 +26,11 @@ function LoginForm() {
       [e.target.name]: e.target.value,
     });
   };
-
+/**
+ * Función para enviar el formulario
+ * @param {*} credentials 
+ * @param {*} e 
+ */
   function handleSubmitCredentials(credentials, e) {
     //Previene al navegador recargar la página
     e.preventDefault();
@@ -47,11 +51,9 @@ function LoginForm() {
       .then((data) => {
         setMensaje(data.mensaje);
         //Guardamos el token en el navegador
-        const token = storage.set("token", data.token);
-        console.log(token )
-        if (token) {
-          navigate("/home");
-        }
+        storage.set("token", data.token);
+        //Redirección
+        navigate("/home", { replace: true });
       })
       .catch((error) => console.log(error));
   }

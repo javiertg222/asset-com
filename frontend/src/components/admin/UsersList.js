@@ -74,7 +74,7 @@ function UsersList() {
             </tr>
           </thead>
           <tbody>
-            {!users ? (
+            {!users.length ? (
               <tr>
                 <td>{AlertData("No hay usuarios para mostrar.", "warning")}</td>
               </tr>

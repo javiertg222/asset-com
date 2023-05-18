@@ -19,7 +19,7 @@ function AssetsList() {
   /**
    * Cambia de color el status de la tabla según sea "Alta, "Pendiente" o "Baja"
    * @param {*} asset
-   * @returns
+   * @returns colors
    */
   const estilo = (asset) => {
     if (asset.estado === "Alta") {
@@ -57,7 +57,7 @@ function AssetsList() {
 
   useEffect(() => {
     getAssets("http://localhost:3001/activos", setAssets);
-  }, [assets]);
+  }, [setAssets]);
 
   return (
     <>
@@ -107,7 +107,7 @@ function AssetsList() {
             </tr>
           </thead>
           <tbody>
-            {!result ? (
+            {!assets.length ? (
               <tr>
                 <td>{AlertData("No hay activos para mostrar.", "warning")}</td>
               </tr>

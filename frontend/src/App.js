@@ -1,7 +1,7 @@
 import NavBar from "./components/layout/NavBar";
 import Footer from "./components/layout/Footer";
 import Home from "./components/home/Home";
-import { Routes, Route, Navigate} from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import LoginForm from "./components/LoginForm";
 import Logout from "./components/Logout";
 import Settings from "./components/admin/Settings";
@@ -20,16 +20,16 @@ import decodeToken from "./utils/decodeToken";
 import { useState, useEffect } from "react";
 
 function App() {
-  const [isLogged, setIsLogged] = useState(false)
+  const [isLogged, setIsLogged] = useState(false);
   const token = storage.get("token");
-  const [user, setUser] = useState(null)
-  console.log(token)
+  const [user, setUser] = useState(null);
+  console.log(token);
   useEffect(() => {
-  if (token) {
-    setUser(decodeToken(token));
-    setIsLogged(true)
-  }
-},[isLogged, token]);
+    if (token) {
+      setUser(decodeToken(token));
+      setIsLogged(true);
+    }
+  }, [token]);
   return (
     <>
       <div className="App">
@@ -49,7 +49,7 @@ function App() {
             <Route path="/assets" element={<AssetsList />} />
             <Route path="/assets/form" element={<AssetForm />} />
             <Route path="/barcode" element={<BarCode />} />
-          </Route>
+            </Route>
           <Route path="/404" element={<NotFound404 />} />
           <Route path="*" element={<Navigate to="/404" />} />
         </Routes>
