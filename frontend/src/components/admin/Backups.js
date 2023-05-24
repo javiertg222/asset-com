@@ -16,7 +16,7 @@ function Backups() {
       .then((datos) => {
         setBackup(datos);
         setStatus(true);
-      });
+      }).catch((error) => console.log(error));
   };
 
   return (

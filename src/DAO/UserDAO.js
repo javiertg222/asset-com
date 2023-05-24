@@ -42,10 +42,9 @@ const createUser = async (req, res, next) => {
   }
 };
 
-const getUser = async (req, res, next) => {
+const getUser = async (req, res, next, id) => {
   const sql = "SELECT * FROM usuarios WHERE id = ?";
-  const params = [req.params.id];
-  db.get(sql, params, (err, row) => {
+  db.get(sql, id, (err, row) => {
     if (err) {
       res.status(400).json({ error: err.message });
       return;
@@ -55,9 +54,9 @@ const getUser = async (req, res, next) => {
 };
 /**
  * Obtener los usuarios de la aplicación
- * @param {*} req 
- * @param {*} res 
- * @param {*} next 
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
  */
 const getUsers = async (req, res, next) => {
   const sql =
@@ -159,37 +158,48 @@ const deleteUser = async (req, res, next) => {
     console.log(error.message);
   }
 };
-
-const changePassword = async (req, res) => {
+/**
+ * Cambiar la contraseña
+ * @param {*} req
+ * @param {*} res
+ */
+const changePassword = async (req, res, next) => {
   const id = Number(req.params.id);
-  const users = req.body;
-  const password = req.body.password;
+  const { password, newPassword, confirmPassword } = req.body;
 
-  if (!changepass.findPassword(password, users)) {
-    res.json({ mesage: "La contraseña no se encuentra" });
-  } else {
-    let sql = `UPDATE usuarios SET password=$password,fecha=datetime('now') WHERE id=${id}`;
-    let data = {
-      $password: await bcrypt.encrypt(req.body.password),
-    };
-    const stm = db.prepare(sql, (error) => {
-      if (error) {
-        throw new Error(error.message);
-      }
-    });
+  db.get("SELECT * FROM usuarios WHERE id = ?", id, async (err, row) => {
+    if (err) {
+      res.status(400).json({ error: err.message });
+    }
+    const validPassword = await bcrypt.compare(
+      password, row.password
+    );
+    if (!validPassword) {
+      return res.json({ message: "La contraseña no es correcta" });
+    } else {
+      let sql = `UPDATE usuarios SET password=$password,fecha=datetime('now') WHERE id=${id}`;
+      let data = {
+        $password: await bcrypt.encrypt(newPassword),
+      };
+      const stm = db.prepare(sql, (error) => {
+        if (error) {
+          throw new Error(error.message);
+        }
+      });
 
-    stm.run(data, (error) => {
-      if (error) {
-        throw new Error(error.message);
-      } else {
-        res.json({
-          message: "success",
-          data: data,
-        });
-      }
-    });
-    stm.finalize();
-  }
+      stm.run(data, (error) => {
+        if (error) {
+          throw new Error(error.message);
+        } else {
+          res.json({
+            ok: true,
+            data: data,
+          });
+        }
+      });
+      stm.finalize();
+    }
+  });
 };
 
 /**
@@ -202,41 +212,35 @@ const login = async (req, res) => {
     email: req.body.email,
     password: req.body.password,
   };
-  let sql= "SELECT usuarios.id, email,password, rol, nombre, apodo FROM usuarios INNER JOIN perfil ON usuarios.id=perfil.id_usuario"
-  //USUARIO DE PRUEBA/INICIO
-  
-  if (credentials.email==="admin@admin.it") {
-    sql="SELECT id, email,password, rol FROM usuarios"
-  }
-  
-  //Recupero todos los datos de los usuarios para comprobar que el email y password existen.
-  db.all(
-   sql,
-    async (err, users) => {
-      if (err) {
-        console.log(err.message);
-      }
-      const user = await findEmail(credentials.email, users);
-      if (!user) {
-        return res.json({ mensaje: "Usuario inválido" });
-      }
-      const validPassword = await bcrypt.compare(
-        credentials.password,
-        user.password
-      );
-      if (!validPassword) {
-        return res.json({ mensaje: "Contraseña incorrecta" });
-      } else {
-        //Crear token
-        const token = createToken(user);
+  const sql =
+    "SELECT usuarios.id, email,password, rol, nombre, apodo FROM usuarios INNER JOIN perfil ON usuarios.id=perfil.id_usuario";
 
-        res.json({
-          mensaje: "Usuario autenticado correctamente",
-          token: token,
-        });
-      }
+  //Recupero todos los datos de los usuarios para comprobar que el email y password existen.
+  db.all(sql, async (err, users) => {
+    if (err) {
+      console.log(err.message);
     }
-  );
+
+    const user = await findEmail(credentials.email, users);
+    if (!user) {
+      return res.json({ mensaje: "Usuario inválido" });
+    }
+    const validPassword = await bcrypt.compare(
+      credentials.password,
+      user.password
+    );
+    if (!validPassword) {
+      return res.json({ mensaje: "Contraseña incorrecta" });
+    } else {
+      //Crear token
+      const token = createToken(user);
+
+      res.json({
+        ok: true,
+        token: token,
+      });
+    }
+  });
 };
 
 module.exports = {

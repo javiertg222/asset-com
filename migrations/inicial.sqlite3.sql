@@ -64,5 +64,6 @@ CREATE TABLE IF NOT EXISTS "activo" (
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
 INSERT INTO etiqueta('nombre') VALUES ('Informatica'), ('Hardware'),('Perifericos'),('Tecnologia'),('Comunicacion'),('Software')
-INSERT INTO usuarios (email, password, rol) VALUES ('admin@admin.it', '$2a$10$VGg5QCk.PP6vnK5fOuSWQeqj1UuUz2ODcNsxeG3Vdyo0rEmw52Uo6', 'admin')
+INSERT INTO usuarios(email,password,rol,fecha) VALUES('admin@admin.it','$2a$10$1WjvHshzeeH/rD1kqmGhHeuBQmi4utVWxv31F9Mstb7ElGBTPwzHq','admin',datetime('now'))
+INSERT INTO perfil(nombre, apellido, apodo, image, id_usuario) VALUES('admin', 'admin', 'admin','',(SELECT id FROM usuarios WHERE ROWID IN (SELECT max(ROWID) FROM usuarios)))
 COMMIT;

@@ -1,8 +1,7 @@
 import { Button, Form, Stack, Card } from "react-bootstrap";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import storage from "../utils/storage";
-import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "../contexts/authContext";
 
 function LoginForm() {
   const {
@@ -13,9 +12,9 @@ function LoginForm() {
   //Valores del formulario
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   //Mensajes repuesta validación servidor
-  const [mensaje, setMensaje] = useState("");
-  const navigate = useNavigate();
-  
+  const [mensaje, setMensaje] = useState(null);
+  //Función login del contexto
+  const { login } = useAuthContext();
   /**
    * Recoge los datos del evento onChange del formulario
    * @param {*} e
@@ -26,11 +25,11 @@ function LoginForm() {
       [e.target.name]: e.target.value,
     });
   };
-/**
- * Función para enviar el formulario
- * @param {*} credentials 
- * @param {*} e 
- */
+  /**
+   * Función para enviar el formulario
+   * @param {*} credentials
+   * @param {*} e
+   */
   function handleSubmitCredentials(credentials, e) {
     //Previene al navegador recargar la página
     e.preventDefault();
@@ -50,22 +49,20 @@ function LoginForm() {
       .then((res) => res.json())
       .then((data) => {
         setMensaje(data.mensaje);
-        //Guardamos el token en el navegador
-        storage.set("token", data.token);
-        //Redirección
-        navigate("/home", { replace: true });
+        //Si el servidor envía un token(ok) entonces la autenticación es correcta
+        if (data.ok) {
+          //Guardamos el token en el navegador
+          login(data.token)
+        }
       })
       .catch((error) => console.log(error));
   }
+
   return (
     <Stack gap={2} className="col-md-3 mx-auto m-3">
       <Card className="text-center">
-        <Card.Header
-          role="heading"
-          style={{ backgroundImage: "url(logo.png)", backgroundSize: 60 }}
-          aria-level="1"
-        >
-          <b>LOGIN</b>
+        <Card.Header role="heading" aria-level="1">
+          INICIO DE SESIÓN
         </Card.Header>
         <Card.Body>
           <Form method="POST" onSubmit={handleSubmit(handleSubmitCredentials)}>
@@ -120,7 +117,7 @@ function LoginForm() {
               <Form.Check type="checkbox" label="Recordarme" />
             </Form.Group>
             <Button variant="primary" type="submit">
-              Acceder
+              Login
             </Button>
           </Form>
         </Card.Body>

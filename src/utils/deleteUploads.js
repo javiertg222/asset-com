@@ -11,11 +11,23 @@ const deleteUploads = (id, sql) => {
 
     if(row.image){
     const arr = row.image.split("/");
-
-    fs.unlink(`src/uploads/${arr[arr.length - 1]}`, function (err) {
-      if (err) throw err;
-      console.info("Image deleted!");
+    const image = arr[arr.length - 1];
+    fs.readdir("src/uploads", (err, files) => {
+      if (err) {
+        console.error(err);
+        throw Error(err);
+      }
+      files.map((file) => {
+        if (file === image) {
+          fs.unlink(`src/uploads/${image}`, function (err) {
+            if (err) throw err;
+            console.info("Image deleted!");
+          });
+        }
+      });
     });
+
+   
   }
   });
 

@@ -14,6 +14,7 @@ import { FaBarcode, FaFilePdf, FaSearch } from "react-icons/fa";
 import Pdf from "./Pdf";
 import Searcher from "../Searcher";
 import { getAssets, deleteAsset } from "../../utils/assets";
+import imagenRota from "../../imagenes/image.svg";
 
 function AssetsList() {
   /**
@@ -54,6 +55,9 @@ function AssetsList() {
             .includes(search.toLowerCase()) ||
           asset.n_serie.toLowerCase().includes(search.toLowerCase())
       );
+  const handleImageError = (e) => {
+    e.target.src = imagenRota;
+  };
 
   useEffect(() => {
     getAssets("http://localhost:3001/activos", setAssets);
@@ -118,9 +122,11 @@ function AssetsList() {
                     <td>{asset.id}</td>
                     <td>
                       <Image
+                        title={asset.nombre}
                         src={asset.image}
                         style={{ height: 45, width: 45 }}
                         thumbnail
+                        onError={handleImageError}
                       />
                     </td>
                     <td>{asset.nombre}</td>
@@ -146,7 +152,9 @@ function AssetsList() {
                       </Button>
                     </td>
                     <td>
-                      <Button className="mb-1" size="sm"
+                      <Button
+                        className="mb-1"
+                        size="sm"
                         variant="outline-success"
                         onClick={() =>
                           navigate("/assets/form", {
@@ -156,7 +164,8 @@ function AssetsList() {
                       >
                         Modificar
                       </Button>
-                      <Button size="sm"
+                      <Button
+                        size="sm"
                         onClick={() => deleteAsset(asset.id, asset.tipo)}
                         variant="outline-danger"
                       >

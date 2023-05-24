@@ -7,6 +7,6 @@ const router = express.Router();
 /**
  * Backups
  */
-router.get("/backups",(req,res)=>{backupController(req,res)});
+router.get("/backups",(req,res, next)=>{backupController(req,res, next)});
 
 module.exports = router;

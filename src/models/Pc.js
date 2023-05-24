@@ -9,9 +9,10 @@ class Pc extends Activo {
     image,
     nucleos,
     ram,
-    tipo
+    tipo,
+    id_usuario
   ) {
-    super(nombre, n_serie, estado, localizacion, image, tipo);
+    super(nombre, n_serie, estado, localizacion, image, tipo, id_usuario);
     this.nucleos = nucleos;
     this.ram = ram;
 

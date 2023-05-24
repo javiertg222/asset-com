@@ -13,7 +13,7 @@ const { upload } = require("../middlewares/upload");
  * Crear un activo
  */
 
-router.post("/activo", upload, controllerAsset.CREATE_ASSET);
+router.post("/activo/:id_usuario", upload, controllerAsset.CREATE_ASSET);
 /**
  * Listar todos los activos
  */
@@ -25,7 +25,7 @@ router.get("/activo", controllerAsset.GET_ASSET);
 /**
  * Modificar un activo
  */
-router.put("/activo/:id", upload, controllerAsset.UPDATE_ASSET);
+router.put("/activo/:id/:id_usuario", upload, controllerAsset.UPDATE_ASSET);
 
 router.delete("/activo/:id/:tipo", controllerAsset.DELETE_ASSET);
 

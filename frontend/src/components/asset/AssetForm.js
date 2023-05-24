@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { Button, Container, Col, Form, Row } from "react-bootstrap";
 import AlertData from "../AlertData";
+import { useAuthContext } from "../../contexts/authContext";
 import resolucion from "../../data/resolucion.json";
 import tamano from "../../data/tamano.json";
 import ram from "../../data/ram.json";
@@ -10,14 +11,27 @@ import status from "../../data/status.json";
 import location from "../../data/location.json";
 import etiquetas from "../../data/etiquetas.json";
 import assets from "../../data/assets.json";
+import decodeToken from "../../utils/decodeToken";
 
 function AssetForm() {
   /**Constante estado para los datos del activo a modificar.
    Recupero con el hook useLocation el activo enviado con useNavigate 
    */
   const { state } = useLocation();
+  //Constate para mensajes de alerta
   const [alerta, setAlerta] = useState(false);
-
+  //Contexto
+  const {isAuthenticated} =useAuthContext();
+//Contante para los datos(id) del usuario/token
+const [user, setUser] = useState(null)
+  useEffect(() => {
+    if (isAuthenticated) {
+      const token= localStorage.getItem('token')
+    //Decodificar el token para utilizar el nombre de usuario
+    const decode = decodeToken(token);
+    setUser(decode.user.id)
+    }
+  }, [isAuthenticated]);
   //VALIDACIONES
   const {
     reset,
@@ -38,6 +52,7 @@ function AssetForm() {
     ram: state != null ? state.assetData.ram : "",
     etiquetas: [],
   });
+
 
   /**
    * Funcion para los cambios en el formulario
@@ -86,10 +101,10 @@ function AssetForm() {
     let metodo = "";
 
     if (state != null) {
-      url = `http://localhost:3001/activo/${state.assetData.id}`;
+      url = `http://localhost:3001/activo/${state.assetData.id}/${user}`;
       metodo = "PUT";
     } else {
-      url = `http://localhost:3001/activo`;
+      url = `http://localhost:3001/activo/${user}`;
       metodo = "POST";
     }
 

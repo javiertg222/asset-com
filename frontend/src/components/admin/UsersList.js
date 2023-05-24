@@ -7,6 +7,7 @@ import Searcher from "../Searcher";
 import { FaSearch } from "react-icons/fa";
 import { getUsers, deleteUser } from "../../utils/users";
 
+
 function UsersList() {
   //Constante estado para enviar los datos de un usuario al formulario para modificar
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ function UsersList() {
 
   useEffect(() => {
     getUsers("http://localhost:3001/usuarios", setUsers);
-  }, [users]);
+  }, [setUsers]);
 
   return (
     <>
@@ -79,9 +80,9 @@ function UsersList() {
                 <td>{AlertData("No hay usuarios para mostrar.", "warning")}</td>
               </tr>
             ) : (
-              result.map((user, index) => (
+              result.map((user) => (
                 <>
-                  <tr key={index}>
+                  <tr key={user.id}>
                     <td
                       onClick={() => {
                         setUser(user);
@@ -131,7 +132,8 @@ function UsersList() {
                       {user.fecha}
                     </td>
                     <td>
-                      <Button size="sm"
+                      <Button
+                        size="sm"
                         variant="outline-success"
                         /**
                         Con el Hook usenavigate podemos pasar a una ruta un segundo parámetro como objeto.
@@ -145,7 +147,8 @@ function UsersList() {
                       >
                         Modificar
                       </Button>{" "}
-                      <Button size="sm"
+                      <Button
+                        size="sm"
                         onClick={() => deleteUser(user.id)}
                         variant="outline-danger"
                       >

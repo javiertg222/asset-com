@@ -1,7 +1,15 @@
 import {Card, ListGroup, Image} from "react-bootstrap";
 import { Modal, Button } from "react-bootstrap";
+import imagenRota from "../../imagenes/image.svg";
 
 function CardUser(props) {
+  /**
+   * Función para las imágenes rotas
+   * @param {evento} e 
+   */
+  const handleImageError = (e) => {
+    e.target.src = imagenRota;
+  };
 
   return (
     <>
@@ -17,7 +25,7 @@ function CardUser(props) {
         <Modal.Body>
           <Card bg="primary" style={{ width: "18rem" }}>
             <ListGroup variant="flush">
-            <ListGroup.Item><b>FOTO:</b><Image className="m-1" src={props.user.image} style={{height:60 , width:50,}}  thumbnail/></ListGroup.Item>
+            <ListGroup.Item><b>FOTO:</b><Image className="m-1" title={props.user.nombre} src={props.user.image} style={{height:60 , width:50,}} onError={handleImageError}  thumbnail/></ListGroup.Item>
               <ListGroup.Item><b>ID:</b> {props.user.id}</ListGroup.Item>
               <ListGroup.Item><b>NOMBRE:</b> {props.user.nombre}</ListGroup.Item>
               <ListGroup.Item><b>APELLIDO:</b> {props.user.apellido}</ListGroup.Item>

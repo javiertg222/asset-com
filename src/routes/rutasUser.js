@@ -40,6 +40,6 @@ router.delete("/usuario/:id", controllerUser.DELETE_USER);
 /**
  * Cambiar la contraseña
  */
-router.post("/password", controllerUser.CHANGE_PASSWORD);
+router.post("/password/:id", controllerUser.CHANGE_PASSWORD);
 
 module.exports = router;

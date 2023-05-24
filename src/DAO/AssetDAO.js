@@ -2,7 +2,11 @@ const db = require("../../database");
 const Pc = require("../models/Pc");
 const Monitor = require("../models/Monitor");
 const { deleteUploads } = require("../utils/deleteUploads");
-
+/**
+ * Función para obtener todos los activos de la aplicación
+ * @param {*} req
+ * @param {*} res
+ */
 const getAssets = async (req, res) => {
   const sql = `SELECT id, nombre, n_serie, estado, localizacion, image, fecha, resolucion, tamano,null as nucleos, null as ram,tipo FROM activo INNER JOIN monitor ON activo.id = monitor.id_a
   UNION
@@ -18,9 +22,10 @@ const getAssets = async (req, res) => {
   });
 };
 
+
 const getAsset = async (req, res, id) => {
   const sql = "SELECT * FROM activo WHERE id = ?";
-  const params = [req.params.id];
+  const params = [req.params.id] || id;
   db.get(sql, params, (err, row) => {
     if (err) {
       res.status(400).json({ error: err.message });
@@ -29,9 +34,14 @@ const getAsset = async (req, res, id) => {
     res.json(row);
   });
 };
-
+/**
+ * Crear un activo
+ * @param {*} req 
+ * @param {*} res 
+ */
 const createAsset = async (req, res) => {
   try {
+    const id_usuario = Number(req.params.id_usuario);
     const sql_activo = `INSERT INTO activo(nombre,n_serie,estado,localizacion,image,fecha,id_usuario, tipo)
     VALUES($nombre,$n_serie,$estado,$localizacion,$image,datetime('now'), $id_usuario, $tipo)`;
     //PC
@@ -66,6 +76,7 @@ const createAsset = async (req, res) => {
           ? `${process.env.URL}:${process.env.PORT}/public/${req.file.filename}`
           : "",
         $tipo: pc.tipo,
+        $id_usuario: id_usuario,
       };
 
       pc.actionsAsset(sql_activo, asset);
@@ -121,6 +132,7 @@ const createAsset = async (req, res) => {
           ? `${process.env.URL}:${process.env.PORT}/public/${req.file.filename}`
           : "",
         $tipo: monitor.tipo,
+        $id_usuario: id_usuario,
       };
 
       monitor.actionsAsset(sql_activo, asset);
@@ -155,7 +167,9 @@ const createAsset = async (req, res) => {
 const updateAsset = async (req, res, next) => {
   try {
     const id = Number(req.params.id);
-    let sql_activo = `UPDATE activo SET nombre=$nombre, n_serie=$n_serie, estado=$estado, localizacion=$localizacion, fecha=datetime('now'), id_usuario="", tipo=$tipo WHERE id=${id}`;
+    const id_usuario = Number(req.params.id_usuario);
+  
+    let sql_activo = `UPDATE activo SET nombre=$nombre, n_serie=$n_serie, estado=$estado, localizacion=$localizacion, fecha=datetime('now'), id_usuario=$id_usuario, tipo=$tipo WHERE id=${id}`;
     //PC
     if (req.body.tipo == "Pc") {
       const {
@@ -177,7 +191,8 @@ const updateAsset = async (req, res, next) => {
         "",
         nucleos,
         ram,
-        tipo
+        tipo, 
+        id_usuario
       );
       let asset = {
         $nombre: pc.nombre,
@@ -185,6 +200,7 @@ const updateAsset = async (req, res, next) => {
         $estado: pc.estado,
         $localizacion: pc.localizacion,
         $tipo: pc.tipo,
+        $id_usuario: pc.id_usuario,
       };
 
       pc.actionsAsset(sql_activo, asset);
@@ -198,7 +214,7 @@ const updateAsset = async (req, res, next) => {
 
       //Evaluo si se cambia la imagen o se deja la misma
       if (req.file) {
-        sql_activo = `UPDATE activo SET nombre=$nombre, n_serie=$n_serie ,estado=$estado ,localizacion=$localizacion, image=$image, fecha=datetime('now'), id_usuario='', tipo=$tipo WHERE id=${id}`;
+        sql_activo = `UPDATE activo SET nombre=$nombre, n_serie=$n_serie ,estado=$estado ,localizacion=$localizacion, image=$image, fecha=datetime('now'), id_usuario=$id_usuario, tipo=$tipo WHERE id=${id}`;
         asset = {
           $nombre: pc.nombre,
           $n_serie: pc.n_serie,
@@ -206,12 +222,14 @@ const updateAsset = async (req, res, next) => {
           $localizacion: pc.localizacion,
           $image: `${process.env.URL}:${process.env.PORT}/public/${req.file.filename}`,
           $tipo: pc.tipo,
+          $id_usuario: pc.id_usuario,
         };
 
-        //Elimino la imagen del servidor
-        deleteUploads(id, "SELECT image FROM activo WHERE id = ?");
         //Añado el activo modificado
         pc.actionsAsset(sql_activo, asset);
+        
+        //Elimino la imagen del servidor
+        deleteUploads(id, "SELECT image FROM activo WHERE id = ?");
       }
       res.json({ message: "Activo modificado con éxito!" });
     }
@@ -236,7 +254,8 @@ const updateAsset = async (req, res, next) => {
         "",
         resolucion,
         tamano,
-        tipo
+        tipo,
+        id_usuario
       );
       let asset = {
         $nombre: monitor.nombre,
@@ -244,6 +263,7 @@ const updateAsset = async (req, res, next) => {
         $estado: monitor.estado,
         $localizacion: monitor.localizacion,
         $tipo: monitor.tipo,
+        $id_usuario: monitor.id_usuario,
       };
 
       monitor.actionsAsset(sql_activo, asset);
@@ -256,7 +276,7 @@ const updateAsset = async (req, res, next) => {
       monitor.actionsAsset(sql_monitor, mnt);
       //Evaluo si se cambia la imagen o se deja la misma
       if (req.file) {
-        sql_activo = `UPDATE activo SET nombre=$nombre, n_serie=$n_serie, estado=$estado, localizacion=$localizacion, image=$image, fecha=datetime('now'), id_usuario='', tipo=$tipo WHERE id=${id}`;
+        sql_activo = `UPDATE activo SET nombre=$nombre, n_serie=$n_serie, estado=$estado, localizacion=$localizacion, image=$image, fecha=datetime('now'), id_usuario=$id_usuario, tipo=$tipo WHERE id=${id}`;
         asset = {
           $nombre: monitor.nombre,
           $n_serie: monitor.n_serie,
@@ -264,13 +284,15 @@ const updateAsset = async (req, res, next) => {
           $localizacion: monitor.localizacion,
           $image: `${process.env.URL}:${process.env.PORT}/public/${req.file.filename}`,
           $tipo: monitor.tipo,
+          $id_usuario: monitor.id_usuario,
         };
 
-        //Elimino la imagen del servidor
-        deleteUploads(id, "SELECT image FROM activo WHERE id = ?");
         //Añado el activo modificado
         monitor.actionsAsset(sql_activo, asset);
         monitor.actionsAsset(sql_monitor, mnt);
+        //Elimino la imagen del servidor
+        deleteUploads(id, "SELECT image FROM activo WHERE id = ?");
+        
       }
       res.json({ message: "Activo modificado con éxito!" });
     }

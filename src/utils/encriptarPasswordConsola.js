@@ -12,7 +12,8 @@ if (argumentos.length < 1)
 
 
 /**
- * Función para encriptar un password
+ * Función para encriptar un password.
+ * Se accede al directorio utils desde una consola y se ejecuta 'node encriptarPasswordConsola.js "texto-password"'
  * @param {*} textPlain
  * @returns password encriptado
  */
