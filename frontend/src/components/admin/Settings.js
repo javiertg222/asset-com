@@ -3,11 +3,14 @@ import AlertData from "../AlertData";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { getConfiguration } from "../../utils/configuration";
+import decodeToken from "../../utils/decodeToken";
 
 function Settings() {
   const [alerta, setAlerta] = useState(false);
   const [config, setConfig] = useState([]);
 
+  //Contante para los datos(id) del usuario/token
+  const [user, setUser] = useState(null);
   //VALIDACIONES
   const {
     register,
@@ -43,10 +46,10 @@ function Settings() {
     let metodo = "";
 
     if (config.length !== 0) {
-      url = `http://localhost:3001/configuracion/${config[0].id}`;
+      url = `http://localhost:3001/configuracion/${config[0].id}/${user}`;
       metodo = "PUT";
     } else {
-      url = "http://localhost:3001/configuracion";
+      url = `http://localhost:3001/configuracion/${user}`;
       metodo = "POST";
     }
 
@@ -72,8 +75,12 @@ function Settings() {
   };
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    //Decodificar el token para utilizar el nombre de usuario
+    const decode = decodeToken(token);
+    setUser(decode.user.id);
     getConfiguration("http://localhost:3001/configuracion", setConfig);
-  }, []);
+  }, [setConfig]);
 
   return (
     <Container className="m-5">
@@ -93,7 +100,7 @@ function Settings() {
                 type="text"
                 name="titulo"
                 placeholder="Título..."
-                defaultValue={config.length !== 0 && config[0].titulo ? config[0].titulo : datos.titulo}
+                defaultValue={config.length !== 0 && config[0].titulo ? config[0].titulo : ""}
                 onChange={handleInputChange}
                 {...register("titulo", {
                   required: {

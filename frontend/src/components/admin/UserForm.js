@@ -45,7 +45,8 @@ function UserForm() {
    * @param {evento} e
    * @param {usuario} user
    */
-  function handleSubmitUser(user,e) {
+  function handleSubmitUser(user, e) {
+    const token = localStorage.getItem("token");
     //Previene al navegador recargar la página
     e.preventDefault();
 
@@ -77,7 +78,13 @@ function UserForm() {
       metodo = "POST";
     }
 
-    fetch(url, { method: metodo, body: formData })
+    fetch(url, {
+      method: metodo,
+      headers: {
+        'Authorization': token,
+      },
+      body: formData,
+    })
       .then((res) => {
         if (res.ok) {
           console.log("Todo bien");
@@ -86,12 +93,11 @@ function UserForm() {
           console.log("Respuesta de red OK pero respuesta de HTTP no OK");
         }
       })
-      .catch((error) => console.log(error));
+      .catch((error) => console.log('Hubo un problema con la petición Fetch:' + error.message));
 
     // Limpiar campos
     e.target.reset();
   }
-
 
   return (
     <>
@@ -104,7 +110,8 @@ function UserForm() {
             "success"
           )}
 
-        <Form className="m-5"
+        <Form
+          className="m-5"
           id="form-user"
           method="POST"
           onSubmit={handleSubmit(handleSubmitUser)}
@@ -136,7 +143,7 @@ function UserForm() {
                 type="text"
                 name="apellido"
                 placeholder="Enter apellido"
-                defaultValue={user.apellido }
+                defaultValue={user.apellido}
                 onChange={handleInputChange}
                 {...register("apellido", {
                   required: {

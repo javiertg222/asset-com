@@ -4,9 +4,9 @@ const express = require("express");
 const router = express.Router();
 //Middleware para subir imágenes al servidor
 const { upload } = require("../middlewares/upload");
+const {verifyToken} = require("../middlewares/verifyToken")
 //Importamos los controladores
 const controllerUser = require("../controllers/userController");
-const {validatorUser, validate} = require("../validators/validator")
 
 //USER ENDPOINTS
 

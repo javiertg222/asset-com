@@ -6,6 +6,7 @@ const Perfil = require("../models/Perfil");
 const { deleteUploads } = require("../utils/deleteUploads");
 const { findEmail } = require("../utils/findEmail");
 const { createToken } = require("../utils/createToken");
+
 /**
  * Método para crear usuarios
  * @param {*} req
@@ -13,7 +14,9 @@ const { createToken } = require("../utils/createToken");
  * @param {*} next
  */
 const createUser = async (req, res, next) => {
+  
   try {
+    console.log("hola")
     const { nombre, apellido, apodo, email, password, rol, image } = req.body;
     const sql_usuario = `INSERT INTO usuarios(email,password,rol,fecha) VALUES($email,$password,$rol,datetime('now'))`;
     const usuario = new Usuario(email, await bcrypt.encrypt(password), rol);

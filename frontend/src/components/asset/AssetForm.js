@@ -27,7 +27,7 @@ const [user, setUser] = useState(null)
   useEffect(() => {
     if (isAuthenticated) {
       const token= localStorage.getItem('token')
-    //Decodificar el token para utilizar el nombre de usuario
+    //Decodificar el token para utilizar el id de usuario
     const decode = decodeToken(token);
     setUser(decode.user.id)
     }

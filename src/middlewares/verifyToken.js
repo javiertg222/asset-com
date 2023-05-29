@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken')
 
 // Middleware to validate token (rutas protegidas)
-const verifyToken = (req, res, next) => {
-    const token = req.header('token')
+const verifyToken = async (req, res, next) => {
+    const token = req.headers['authorization']
     if (!token) return res.status(401).json({ error: 'Acceso denegado' })
     try {
         const verified = jwt.verify(token, process.env.TOKEN_SECRET)
@@ -13,4 +13,4 @@ const verifyToken = (req, res, next) => {
     }
 }
 
-module.exports = verifyToken;
+module.exports = {verifyToken};
