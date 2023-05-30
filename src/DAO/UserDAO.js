@@ -16,7 +16,7 @@ const { createToken } = require("../utils/createToken");
 const createUser = async (req, res, next) => {
   
   try {
-    console.log("hola")
+
     const { nombre, apellido, apodo, email, password, rol, image } = req.body;
     const sql_usuario = `INSERT INTO usuarios(email,password,rol,fecha) VALUES($email,$password,$rol,datetime('now'))`;
     const usuario = new Usuario(email, await bcrypt.encrypt(password), rol);
@@ -44,7 +44,13 @@ const createUser = async (req, res, next) => {
     console.log(error.message);
   }
 };
-
+/**
+ * Obtener un usuario por id
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ * @param {*} id 
+ */
 const getUser = async (req, res, next, id) => {
   const sql = "SELECT * FROM usuarios WHERE id = ?";
   db.get(sql, id, (err, row) => {
@@ -56,7 +62,7 @@ const getUser = async (req, res, next, id) => {
   });
 };
 /**
- * Obtener los usuarios de la aplicación
+ * Obtener todos los usuarios de la aplicación
  * @param {*} req
  * @param {*} res
  * @param {*} next

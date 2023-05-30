@@ -14,7 +14,7 @@ const controllerUser = require("../controllers/userController");
  * Listar todos los usuarios
  */
 
-router.get("/usuarios", controllerUser.GET_USERS);
+router.get("/usuarios", verifyToken, controllerUser.GET_USERS);
 /**
  * Listar un usuario por id
  */
@@ -24,18 +24,18 @@ router.get("/usuario/:id", controllerUser.GET_USER);
  * Insertar usuarios
  */
 
-router.post("/usuario", upload, controllerUser.CREATE_USER);
+router.post("/usuario", verifyToken, upload, controllerUser.CREATE_USER);
 
 /**
  * Modificar usuarios
  */
 
-router.put("/usuario/:id", upload, controllerUser.UPDATE_USER);
+router.put("/usuario/:id", verifyToken, upload, controllerUser.UPDATE_USER);
 
 /**
  * Borrar usuarios
  */
-router.delete("/usuario/:id", controllerUser.DELETE_USER);
+router.delete("/usuario/:id", verifyToken, controllerUser.DELETE_USER);
 
 /**
  * Cambiar la contraseña

@@ -81,19 +81,24 @@ function UserForm() {
     fetch(url, {
       method: metodo,
       headers: {
-        'Authorization': token,
+        Authorization: `Bearer ${token}`,
       },
       body: formData,
     })
       .then((res) => {
         if (res.ok) {
           console.log("Todo bien");
-          setAlerta(true);
         } else {
           console.log("Respuesta de red OK pero respuesta de HTTP no OK");
         }
+        return res.json();
       })
-      .catch((error) => console.log('Hubo un problema con la petición Fetch:' + error.message));
+      .then((data) => {
+        setAlerta(data);
+      })
+      .catch((error) =>
+        console.log("Hubo un problema con la petición Fetch:" + error.message)
+      );
 
     // Limpiar campos
     e.target.reset();
@@ -102,13 +107,9 @@ function UserForm() {
   return (
     <>
       <Container className="m-5">
-        {alerta &&
-          AlertData(
-            `Usuario ${
-              state == null ? "añadido" : "modificado"
-            } correctamente!`,
-            "success"
-          )}
+        {alerta?.message &&
+          AlertData(alerta?.message, "success")}
+           {alerta?.error &&  AlertData(alerta?.error, "danger")}
 
         <Form
           className="m-5"
