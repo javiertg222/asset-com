@@ -5,7 +5,7 @@ const Usuario = require("../models/Usuario");
 const Perfil = require("../models/Perfil");
 const { deleteUploads } = require("../utils/deleteUploads");
 const { findEmail } = require("../utils/findEmail");
-const { createToken } = require("../utils/createToken");
+const { createToken, decodeToken } = require("../utils/operateToken");
 
 /**
  * Método para crear usuarios
@@ -14,9 +14,7 @@ const { createToken } = require("../utils/createToken");
  * @param {*} next
  */
 const createUser = async (req, res, next) => {
-  
   try {
-
     const { nombre, apellido, apodo, email, password, rol, image } = req.body;
     const sql_usuario = `INSERT INTO usuarios(email,password,rol,fecha) VALUES($email,$password,$rol,datetime('now'))`;
     const usuario = new Usuario(email, await bcrypt.encrypt(password), rol);
@@ -46,14 +44,17 @@ const createUser = async (req, res, next) => {
 };
 /**
  * Obtener un usuario por id
- * @param {*} req 
- * @param {*} res 
- * @param {*} next 
- * @param {*} id 
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ * @param {*} id
  */
 const getUser = async (req, res, next, id) => {
-  const sql = "SELECT * FROM usuarios WHERE id = ?";
-  db.get(sql, id, (err, row) => {
+  //Lo envía el middleware verifyToken
+  const user = req.user;
+  const id_usuario = Number(user.user.id);
+  const sql = "SELECT * FROM perfil WHERE id_usuario = ?";
+  db.get(sql, id_usuario, (err, row) => {
     if (err) {
       res.status(400).json({ error: err.message });
       return;
@@ -168,23 +169,69 @@ const deleteUser = async (req, res, next) => {
   }
 };
 /**
+ * Modificar el perfil
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ */
+const updatePerfil = async (req, res, next) => {
+  try {
+    const { nombre, apellido, apodo, image } = req.body;
+    const id = Number(req.params.id);
+    const perfil = new Perfil(nombre, apellido, apodo, image);
+    let sql_perfil = "";
+    let prf = {};
+
+    //Evaluo si se cambia la imagen o se deja la misma
+    if (req.file) {
+      sql_perfil = `UPDATE perfil SET nombre=$nombre, apellido=$apellido, apodo=$apodo,image=$image WHERE id_usuario=${id}`;
+
+      prf = {
+        $nombre: perfil.nombre,
+        $apellido: perfil.apellido,
+        $apodo: perfil.apodo,
+        $image: `${process.env.URL}:${process.env.PORT}/public/${req.file.filename}`,
+      };
+      //Elimino la imagen del servidor
+      deleteUploads(id, "SELECT image FROM perfil WHERE id_usuario = ?");
+    } else {
+      sql_perfil = `UPDATE perfil SET nombre=$nombre, apellido=$apellido, apodo=$apodo WHERE id_usuario=${id}`;
+      prf = {
+        $nombre: perfil.nombre,
+        $apellido: perfil.apellido,
+        $apodo: perfil.apodo,
+      };
+    }
+    perfil.actionsPerfil(sql_perfil, prf);
+
+    res.json({
+      message: "Perfil modificado con éxito!",
+      perfil: perfil,
+    });
+ 
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+/**
  * Cambiar la contraseña
  * @param {*} req
  * @param {*} res
  */
 const changePassword = async (req, res, next) => {
-  const id = Number(req.params.id);
+  //Lo envía el middleware verifyToken
+  const user = req.user;
+  const id = Number(user.user.id);
   const { password, newPassword, confirmPassword } = req.body;
 
   db.get("SELECT * FROM usuarios WHERE id = ?", id, async (err, row) => {
     if (err) {
       res.status(400).json({ error: err.message });
     }
-    const validPassword = await bcrypt.compare(
-      password, row.password
-    );
+    const validPassword = await bcrypt.compare(password, row.password);
     if (!validPassword) {
-      return res.json({ message: "La contraseña no es correcta" });
+      return res.json({ error: "La contraseña no es correcta" });
     } else {
       let sql = `UPDATE usuarios SET password=$password,fecha=datetime('now') WHERE id=${id}`;
       let data = {
@@ -200,10 +247,7 @@ const changePassword = async (req, res, next) => {
         if (error) {
           throw new Error(error.message);
         } else {
-          res.json({
-            ok: true,
-            data: data,
-          });
+          res.json({ message: "Contraseña cambiada con éxito!" });
         }
       });
       stm.finalize();
@@ -260,4 +304,5 @@ module.exports = {
   deleteUser,
   changePassword,
   login,
+  updatePerfil,
 };

@@ -11,6 +11,7 @@ function UserForm() {
    */
   const { state } = useLocation();
   const [alerta, setAlerta] = useState(null);
+  const [show, setShow] = useState(true);
 
   //VALIDACIONES FORMULARIO
   const {
@@ -102,14 +103,15 @@ function UserForm() {
 
     // Limpiar campos
     e.target.reset();
+    setShow(true)
   }
 
   return (
     <>
       <Container className="m-5">
         {alerta?.message &&
-          AlertData(alerta?.message, "success")}
-           {alerta?.error &&  AlertData(alerta?.error, "danger")}
+          (show&&AlertData(alerta?.message, "success", setShow))}
+           {alerta?.error &&  (show&&AlertData(alerta?.error, "danger", setShow))}
 
         <Form
           className="m-5"

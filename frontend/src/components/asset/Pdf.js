@@ -1,6 +1,6 @@
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import MyDocument from "./MyDocument";
-import AlertData from "../AlertData";
+import Alert from "react-bootstrap/Alert";
 
 const Pdf = (assets) => (
   <PDFDownloadLink
@@ -12,11 +12,19 @@ const Pdf = (assets) => (
     }}
   >
     {(blob, url, loading, error) =>
-      error
-        ? AlertData("Algo ha salido mal...", "danger")
-        : loading
-        ? AlertData("Loading document...", "success")
-        : AlertData("Download PDF!", "success")
+      error ? (
+        <Alert key="danger" variant="danger">
+          "Algo ha salido mal..."
+        </Alert>
+      ) : loading ? (
+        <Alert key="success" variant="success">
+          "Loading document..."
+        </Alert>
+      ) : (
+        <Alert key="success" variant="success">
+          "Download PDF!"
+        </Alert>
+      )
     }
   </PDFDownloadLink>
 );

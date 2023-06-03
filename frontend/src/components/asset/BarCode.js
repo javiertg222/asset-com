@@ -1,5 +1,5 @@
 import { Modal, Button } from "react-bootstrap";
-import CreateBarCode from "../utils/createBarCode";
+import CreateBarCode from "../../utils/createBarCode";
 import { FaPrint } from "react-icons/fa";
 import { useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";

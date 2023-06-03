@@ -2,10 +2,8 @@ import { Container, Row, Col } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { useForm } from "react-hook-form";
-import { useState, useEffect } from "react";
+import { useState} from "react";
 import AlertData from "../AlertData";
-import { useAuthContext } from "../../contexts/authContext";
-import decodeToken from "../../utils/decodeToken";
 
 function ChangePass() {
   //VALIDACIONES
@@ -21,19 +19,8 @@ function ChangePass() {
     confirmPassword: "",
   });
   const [alerta, setAlerta] = useState(null);
-  const [mensaje, setMensaje] = useState(null);
-  //Contexto
-  const { isAuthenticated } = useAuthContext();
-  //Constante para los datos(id) del usuario/token
-  const [user, setUser] = useState(null);
-  useEffect(() => {
-    if (isAuthenticated) {
-      const token = localStorage.getItem("token");
-      //Decodificar el token para utilizar el nombre de usuario
-      const decode = decodeToken(token);
-      setUser(decode.user.id);
-    }
-  }, [isAuthenticated]);
+  const [show, setShow] = useState(true);
+
 
   /**
    * Recoge los datos del evento onChange del formulario
@@ -47,6 +34,7 @@ function ChangePass() {
   };
 
   function handleSubmitPassword(datos, e) {
+    const token = localStorage.getItem("token");
     //Previene al navegador recargar la página
     e.preventDefault();
     //LEER DATOS DEL FORMULARIO
@@ -54,22 +42,28 @@ function ChangePass() {
     const formData = new FormData(form);
     const formJson = Object.fromEntries(formData.entries());
 
-    fetch(`http://localhost:3001/password/${user}`, {
+    fetch(`http://localhost:3001/password`, {
       method: form.method,
       body: JSON.stringify(formJson),
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
     })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.ok) {
-          setAlerta(true);
-        }
-        setMensaje(data.message);
-      })
-      .catch((error) => console.log(error));
+      .then((res) =>{ if (res.ok) {
+        console.log("Todo bien");
+      } else {
+        console.log("Respuesta de red OK pero respuesta de HTTP no OK");
+      }
+      return res.json();
+    })
+    .then((data) => {
+      setAlerta(data);
+    })
+    .catch((error) =>
+      console.log("Hubo un problema con la petición Fetch:" + error.message)
+    );
 
     // Limpiar campos
     e.target.reset();
@@ -77,7 +71,9 @@ function ChangePass() {
   return (
     <>
       <Container className="m-5">
-        {alerta && AlertData(`Contraseña cambiada correctamente!`, "success")}
+      {alerta?.message &&
+          (show&&AlertData(alerta?.message, "success", setShow))}
+           {alerta?.error &&  (show&&AlertData(alerta?.error, "danger", setShow))}
         <h3>Cambiar la contraseña:</h3>
         <Row>
           <Col sm={5}>
@@ -158,7 +154,6 @@ function ChangePass() {
                 />
                 <span className="text-danger text-small d-block mb-2">
                   {errors.confirmPassword && errors.confirmPassword.message}
-                  {mensaje}
                 </span>{" "}
               </Form.Group>
               <Button variant="primary" type="submit">

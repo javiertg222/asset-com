@@ -7,7 +7,6 @@ import Searcher from "../Searcher";
 import { FaSearch } from "react-icons/fa";
 import { getUsers, deleteUser } from "../../utils/users";
 
-
 function UsersList() {
   //Constante estado para enviar los datos de un usuario al formulario para modificar
   const navigate = useNavigate();
@@ -16,6 +15,7 @@ function UsersList() {
   const [users, setUsers] = useState([]);
   //Constante estado para mostrar una tarjeta con los datos de un usuario
   const [pulsado, setPulsado] = useState(false);
+  const [show, setShow] = useState(true);
   /**
    * Buscar y filtrar usuarios
    */
@@ -41,8 +41,7 @@ function UsersList() {
 
   useEffect(() => {
     getUsers("http://localhost:3001/usuarios", setUsers);
-  }, [setUsers]);
-
+  }, [users]);
   return (
     <>
       <Container className="m-6">
@@ -54,6 +53,7 @@ function UsersList() {
             <FaSearch size={"1.4em"} />
           </Col>
         </Row>
+        {users?.error && show && AlertData(users?.error, "danger", setShow)}
         <Button
           className="m-3"
           as={Link}
@@ -77,12 +77,18 @@ function UsersList() {
           <tbody>
             {!users.length ? (
               <tr>
-                <td>{AlertData("No hay usuarios para mostrar.", "warning")}</td>
+                <td>
+                  {AlertData(
+                    "No hay usuarios para mostrar.",
+                    "warning",
+                    setShow
+                  )}
+                </td>
               </tr>
             ) : (
               result.map((user) => (
                 <>
-                  <tr key={user.id}>
+                  <tr>
                     <td
                       onClick={() => {
                         setUser(user);

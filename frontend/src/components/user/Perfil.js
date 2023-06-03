@@ -1,15 +1,12 @@
-import { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Button, Container, Col, Form, Row } from "react-bootstrap";
 import AlertData from "../AlertData";
+import { getUser } from "../../utils/users";
 
 function Perfil() {
-  /**Constante estado para los datos del usuario a modificar.
-   Recupero con el hook useLocation el usuario enviado con useNavigate 
-   */
-  const { state } = useLocation();
   const [alerta, setAlerta] = useState(null);
+  const [show, setShow] = useState(true);
 
   //VALIDACIONES FORMULARIO
   const {
@@ -19,12 +16,9 @@ function Perfil() {
     handleSubmit,
   } = useForm({ mode: "onChange" });
   const [user, setUser] = useState({
-    nombre: state != null ? state.userData.nombre : "",
-    apellido: state != null ? state.userData.apellido : "",
-    apodo: state != null ? state.userData.apodo : "",
-    email: state != null ? state.userData.email : "",
-    password: "",
-    rol: state != null ? state.userData.rol : "",
+    nombre: "",
+    apellido: "",
+    apodo: "",
     image: "",
   });
 
@@ -44,66 +38,52 @@ function Perfil() {
    * @param {evento} e
    * @param {usuario} user
    */
-  function handleSubmitUser(user,e) {
+  function handleSubmitUser(user, e) {
     //Previene al navegador recargar la página
     e.preventDefault();
-
-    // LEER DATOS DEL FORMULARIO CUANDO NOOOOOOO HAY FILES
-    //   const form = e.target;
-    //   const formData = new FormData(form);
-    //   const formJson = Object.fromEntries(formData.entries());
-    //const data ={
-    //     method: metodo,
-    //     body: JSON.stringify(formJson),
-    //     headers: {
-    //       Accept: "application/json",
-    //       "Content-Type": "application/json",
-    //     },
 
     // LEER DATOS DEL FORMULARIO CUANDO HAY FILES
     const form = e.target;
     const formData = new FormData(form);
     formData.append("user", Object.entries(formData.entries()));
 
-    let url = "";
-    let metodo = "";
-
-    if (state != null) {
-      url = `http://localhost:3001/usuario/${state.userData.id}`;
-      metodo = "PUT";
-    } else {
-      url = "http://localhost:3001/usuario";
-      metodo = "POST";
-    }
+    const url = `http://localhost:3001/perfil/${user.id}`;
+    const metodo = "PUT";
 
     fetch(url, { method: metodo, body: formData })
       .then((res) => {
         if (res.ok) {
           console.log("Todo bien");
-          setAlerta(true);
         } else {
           console.log("Respuesta de red OK pero respuesta de HTTP no OK");
         }
+        return res.json();
       })
-      .catch((error) => console.log(error));
+      .then((data) => {
+        setAlerta(data);
+      })
+      .catch((error) =>
+        console.log("Hubo un problema con la petición Fetch:" + error.message)
+      );
 
     // Limpiar campos
     e.target.reset();
   }
-
+  useEffect(() => {
+    getUser("http://localhost:3001/usuario", setUser);
+  }, []);
+  console.log(user);
 
   return (
     <>
       <Container className="m-5">
-        {alerta &&
-          AlertData(
-            `Usuario ${
-              state == null ? "añadido" : "modificado"
-            } correctamente!`,
-            "success"
-          )}
+        {alerta?.message &&
+          show &&
+          AlertData(alerta?.message, "success", setShow)}
+        {alerta?.error && show && AlertData(alerta?.error, "danger", setShow)}
 
-        <Form className="m-5"
+        <Form
+          className="m-5"
           id="form-user"
           method="POST"
           onSubmit={handleSubmit(handleSubmitUser)}
@@ -135,7 +115,7 @@ function Perfil() {
                 type="text"
                 name="apellido"
                 placeholder="Enter apellido"
-                defaultValue={user.apellido }
+                defaultValue={user.apellido}
                 onChange={handleInputChange}
                 {...register("apellido", {
                   required: {
@@ -168,7 +148,6 @@ function Perfil() {
               </span>
             </Form.Group>
           </Row>
-          
           <Form.Group controlId="formFileSm" as={Col} sm={5} className="mb-3">
             <Form.Label>Foto</Form.Label>
             <Form.Control
@@ -183,7 +162,7 @@ function Perfil() {
             Reset
           </Button>{" "}
           <Button variant="primary" type="submit">
-            {state == null ? "Crear" : "Modificar"}
+            Modificar
           </Button>
         </Form>
       </Container>

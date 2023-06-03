@@ -1,7 +1,7 @@
 import { Button, Form, Stack, Card } from "react-bootstrap";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useAuthContext } from "../contexts/authContext";
+import { useAuthContext } from "../../contexts/authContext";
 
 function LoginForm() {
   const {

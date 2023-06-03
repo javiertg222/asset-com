@@ -16,6 +16,9 @@ const UPDATE_USER = (req, res, next) => {
 const DELETE_USER = (req, res, next) => {
   usuario.deleteUser(req, res, next);
 };
+const UPDATE_PERFIL = (req, res, next) => {
+  usuario.updatePerfil(req, res, next);
+};
 const CHANGE_PASSWORD = (req, res, next) => {
   usuario.changePassword(req, res, next);
 };
@@ -25,6 +28,7 @@ module.exports = {
   GET_USER,
   CREATE_USER,
   UPDATE_USER,
+  UPDATE_PERFIL,
   DELETE_USER,
   CHANGE_PASSWORD,
 };

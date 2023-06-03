@@ -22,7 +22,6 @@ const getAssets = async (req, res) => {
   });
 };
 
-
 const getAsset = async (req, res, id) => {
   const sql = "SELECT * FROM activo WHERE id = ?";
   const params = [req.params.id] || id;
@@ -36,12 +35,14 @@ const getAsset = async (req, res, id) => {
 };
 /**
  * Crear un activo
- * @param {*} req 
- * @param {*} res 
+ * @param {*} req
+ * @param {*} res
  */
 const createAsset = async (req, res) => {
   try {
-    const id_usuario = Number(req.params.id_usuario);
+    //Lo envía el middleware verifyToken
+    const user = req.user;
+    const id_usuario = Number(user.user.id);
     const sql_activo = `INSERT INTO activo(nombre,n_serie,estado,localizacion,image,fecha,id_usuario, tipo)
     VALUES($nombre,$n_serie,$estado,$localizacion,$image,datetime('now'), $id_usuario, $tipo)`;
     //PC
@@ -67,6 +68,7 @@ const createAsset = async (req, res) => {
         ram,
         tipo
       );
+
       let asset = {
         $nombre: pc.nombre,
         $n_serie: pc.n_serie,
@@ -88,17 +90,25 @@ const createAsset = async (req, res) => {
       };
       pc.actionsAsset(sql_pc, ordenador);
       //ETIQUETAS
+
       if (etiquetas) {
         const sql_etiqueta = `INSERT INTO activo_etiqueta(id_activo, id_etiqueta) VALUES((SELECT id FROM activo WHERE ROWID IN (SELECT max(ROWID) FROM activo)), (SELECT id FROM etiqueta WHERE nombre=$etiqueta))`;
-        etiquetas.map((etiqueta) => {
+
+        if (typeof etiquetas === "string") {
           let etiq = {
-            $etiqueta: etiqueta,
+            $etiqueta: etiquetas,
           };
           pc.actionsAsset(sql_etiqueta, etiq);
-        });
+        } else {
+          etiquetas.map((etiqueta) => {
+            let etiq = {
+              $etiqueta: etiqueta,
+            };
+            pc.actionsAsset(sql_etiqueta, etiq);
+          });
+        }
       }
-
-      res.json({ message: "Activo creado con éxito!" });
+      
     }
     //MONITOR
     if (req.body.tipo == "Monitor") {
@@ -143,21 +153,31 @@ const createAsset = async (req, res) => {
         $tamano: monitor.tamano,
       };
       monitor.actionsAsset(sql_monitor, mnt);
+      
       //ETIQUETAS
       if (etiquetas) {
         const sql_etiqueta = `INSERT INTO activo_etiqueta(id_activo, id_etiqueta) VALUES((SELECT id FROM activo WHERE ROWID IN (SELECT max(ROWID) FROM activo)), (SELECT id FROM etiqueta WHERE nombre=$etiqueta))`;
-        etiquetas.map((etiqueta) => {
+        if (typeof etiquetas === "string") {
           let etiq = {
-            $etiqueta: etiqueta,
+            $etiqueta: etiquetas,
           };
           monitor.actionsAsset(sql_etiqueta, etiq);
-        });
+        } else {
+          etiquetas.map((etiqueta) => {
+            let etiq = {
+              $etiqueta: etiqueta,
+            };
+            monitor.actionsAsset(sql_etiqueta, etiq);
+          });
+        }
+        
       }
-      res.json({ message: "Activo creado con éxito!" });
+     
     }
   } catch (error) {
     console.log(error.message);
   }
+  res.json({ message: "Activo creado con éxito!" });
 };
 /**
  * Actualizar activos
@@ -166,9 +186,11 @@ const createAsset = async (req, res) => {
  */
 const updateAsset = async (req, res, next) => {
   try {
+    //Lo envía el middleware verifyToken
+    const user = req.user;
+    const id_usuario = Number(user.user.id);
     const id = Number(req.params.id);
-    const id_usuario = Number(req.params.id_usuario);
-  
+
     let sql_activo = `UPDATE activo SET nombre=$nombre, n_serie=$n_serie, estado=$estado, localizacion=$localizacion, fecha=datetime('now'), id_usuario=$id_usuario, tipo=$tipo WHERE id=${id}`;
     //PC
     if (req.body.tipo == "Pc") {
@@ -191,7 +213,7 @@ const updateAsset = async (req, res, next) => {
         "",
         nucleos,
         ram,
-        tipo, 
+        tipo,
         id_usuario
       );
       let asset = {
@@ -227,7 +249,7 @@ const updateAsset = async (req, res, next) => {
 
         //Añado el activo modificado
         pc.actionsAsset(sql_activo, asset);
-        
+
         //Elimino la imagen del servidor
         deleteUploads(id, "SELECT image FROM activo WHERE id = ?");
       }
@@ -292,7 +314,6 @@ const updateAsset = async (req, res, next) => {
         monitor.actionsAsset(sql_monitor, mnt);
         //Elimino la imagen del servidor
         deleteUploads(id, "SELECT image FROM activo WHERE id = ?");
-        
       }
       res.json({ message: "Activo modificado con éxito!" });
     }

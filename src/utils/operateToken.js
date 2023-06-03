@@ -14,9 +14,17 @@ const createToken = (user) => {
   const payload = {
     user: usr,
     iat: moment().unix(),
-    exp: moment().add(1, "hours").unix(),
+    exp: moment().add(1, "days").unix(),
   };
   return jwt.sign(payload, process.env.TOKEN_SECRET);
 };
+/**
+ * Método para descodificar un token 
+ * @param {codificado} token 
+ * @returns string
+ */
+const decodeToken = (token)=>{
+  return jwt.decode(token)
+}
 
-module.exports = { createToken };
+module.exports = { createToken, decodeToken };

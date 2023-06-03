@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { Button, Container, Col, Form, Row } from "react-bootstrap";
 import AlertData from "../AlertData";
-import { useAuthContext } from "../../contexts/authContext";
 import resolucion from "../../data/resolucion.json";
 import tamano from "../../data/tamano.json";
 import ram from "../../data/ram.json";
@@ -11,7 +10,6 @@ import status from "../../data/status.json";
 import location from "../../data/location.json";
 import etiquetas from "../../data/etiquetas.json";
 import assets from "../../data/assets.json";
-import decodeToken from "../../utils/decodeToken";
 
 function AssetForm() {
   /**Constante estado para los datos del activo a modificar.
@@ -20,18 +18,8 @@ function AssetForm() {
   const { state } = useLocation();
   //Constate para mensajes de alerta
   const [alerta, setAlerta] = useState(false);
-  //Contexto
-  const {isAuthenticated} =useAuthContext();
-//Contante para los datos(id) del usuario/token
-const [user, setUser] = useState(null)
-  useEffect(() => {
-    if (isAuthenticated) {
-      const token= localStorage.getItem('token')
-    //Decodificar el token para utilizar el id de usuario
-    const decode = decodeToken(token);
-    setUser(decode.user.id)
-    }
-  }, [isAuthenticated]);
+  const [show, setShow] = useState(true);
+
   //VALIDACIONES
   const {
     reset,
@@ -52,7 +40,6 @@ const [user, setUser] = useState(null)
     ram: state != null ? state.assetData.ram : "",
     etiquetas: [],
   });
-
 
   /**
    * Funcion para los cambios en el formulario
@@ -87,6 +74,7 @@ const [user, setUser] = useState(null)
    * @returns
    */
   function handleSubmitAsset(activos, e) {
+    const token = localStorage.getItem("token");
     //Previene al navegador recargar la página
     e.preventDefault();
 
@@ -101,39 +89,47 @@ const [user, setUser] = useState(null)
     let metodo = "";
 
     if (state != null) {
-      url = `http://localhost:3001/activo/${state.assetData.id}/${user}`;
+      url = `http://localhost:3001/activo/${state.assetData.id}`;
       metodo = "PUT";
     } else {
-      url = `http://localhost:3001/activo/${user}`;
+      url = `http://localhost:3001/activo`;
       metodo = "POST";
     }
 
     // Se pasa formData en el cuerpo directamente:
 
-    fetch(url, { method: metodo, body: formData })
+    fetch(url, {
+      method: metodo,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    })
       .then((res) => {
         if (res.ok) {
-          setAlerta(true);
-          return res.json();
-        } else if (res.status === 404) {
-          return Promise.reject("error 404");
+          console.log("Todo bien");
         } else {
-          return Promise.reject("Otro error: " + res.status);
+          console.log("Respuesta de red OK pero respuesta de HTTP no OK");
         }
+        return res.json();
       })
-      .catch((error) => console.log(error));
+      .then((data) => {
+        setAlerta(data);
+      })
+      .catch((error) =>
+        console.log("Hubo un problema con la petición Fetch:" + error.message)
+      );
 
     // Limpiar campos
     e.target.reset();
+    setShow(true)
   }
-
   return (
     <Container className="m-5">
-      {alerta &&
-        AlertData(
-          `Activo ${state == null ? "añadido" : "modificado"} correctamente!`,
-          "success"
-        )}
+      {alerta?.message &&
+        show &&
+        AlertData(alerta?.message, "success", setShow)}
+      {alerta?.error && show && AlertData(alerta?.error, "danger", setShow)}
       <Form
         className="m-5"
         id="form-asset"
@@ -142,15 +138,15 @@ const [user, setUser] = useState(null)
       >
         <h3>{state == null ? "Crear" : "Modificar"} Activo:</h3>
         <Row className="mb-3">
-          <Form.Group as={Col} xs={3} controlId="formGridTipo">
-            <Form.Label variant="primary">Activo</Form.Label>
+          <Form.Group as={Col} xs={3} controlId="tipo">
+            <Form.Label variant="primary">Activo:</Form.Label>
             <Form.Select
-              id="tipo"
               size="sm"
               name="tipo"
               defaultValue={activos.tipo}
               onChange={handleInputChange}
             >
+              <option>Seleccionar</option>
               {assets.map((asset) => (
                 <option key={asset.id}>{asset.name}</option>
               ))}
@@ -158,7 +154,7 @@ const [user, setUser] = useState(null)
           </Form.Group>
         </Row>
         <Row className="mb-3">
-          <Form.Group as={Col} controlId="formGridAssetName">
+          <Form.Group as={Col} controlId="nombre">
             <Form.Label>Nombre</Form.Label>
             <Form.Control
               type="text"
@@ -177,7 +173,7 @@ const [user, setUser] = useState(null)
               {errors.nombre && errors.nombre.message}
             </span>
           </Form.Group>
-          <Form.Group as={Col} controlId="formGridSerialNumber">
+          <Form.Group as={Col} controlId="n_serie">
             <Form.Label>Nº de Serie</Form.Label>
             <Form.Control
               type="text"
@@ -197,10 +193,9 @@ const [user, setUser] = useState(null)
             </span>
           </Form.Group>
 
-          <Form.Group as={Col} controlId="formGridStatus">
+          <Form.Group as={Col} controlId="estado">
             <Form.Label>Estado</Form.Label>
             <Form.Select
-              id="estado"
               name="estado"
               aria-label="select estado"
               defaultValue={activos.estado}
@@ -213,10 +208,9 @@ const [user, setUser] = useState(null)
               ))}
             </Form.Select>
           </Form.Group>
-          <Form.Group as={Col} controlId="formGridLocation">
+          <Form.Group as={Col} controlId="localizacion">
             <Form.Label>Localización</Form.Label>
             <Form.Select
-              id="localizacion"
               name="localizacion"
               aria-label="select localizacion"
               defaultValue={activos.localizacion}
@@ -242,7 +236,7 @@ const [user, setUser] = useState(null)
             />
           </Form.Group>
           {state == null ? (
-            <Form.Group as={Col} sm={2} controlId="formGridEtiquetas">
+            <Form.Group controlId="etiquetas" as={Col} sm={2}>
               <Form.Label>Etiquetas:</Form.Label>
               {etiquetas.map((etiqueta) => (
                 <Form.Check

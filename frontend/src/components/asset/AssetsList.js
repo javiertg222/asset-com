@@ -38,6 +38,7 @@ function AssetsList() {
   //Constante estado para todos los activos
   const [assets, setAssets] = useState([]);
   const [pulsado, setPulsado] = useState(false);
+  const [show, setShow] = useState(true);
   //Constante para el buscador
   const [search, setSearch] = useState("");
   const searcherToAssets = (datosSearch) => {
@@ -61,7 +62,7 @@ function AssetsList() {
 
   useEffect(() => {
     getAssets("http://localhost:3001/activos", setAssets);
-  }, [setAssets]);
+  }, [assets]);
 
   return (
     <>
@@ -74,6 +75,7 @@ function AssetsList() {
             <FaSearch size={"1.4em"} />
           </Col>
         </Row>
+        {assets?.error && show && AlertData(assets?.error, "danger", setShow)}
         {pulsado ? <Pdf data={assets} /> : null}
         <ButtonToolbar
           className="justify-content-between"
@@ -113,7 +115,13 @@ function AssetsList() {
           <tbody>
             {!assets.length ? (
               <tr>
-                <td>{AlertData("No hay activos para mostrar.", "warning")}</td>
+                <td>
+                  {AlertData(
+                    "No hay activos para mostrar.",
+                    "warning",
+                    setShow
+                  )}
+                </td>
               </tr>
             ) : (
               result.map((asset) => (
