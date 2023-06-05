@@ -8,6 +8,7 @@ const { upload } = require("../middlewares/upload");
 const {verifyToken} = require("../middlewares/verifyToken")
 //Importamos los controladores
 const controllerUser = require("../controllers/userController");
+const {validatorUser} = require("../validators/validator")
 
 //USER ENDPOINTS
 
@@ -25,13 +26,13 @@ router.get("/usuario", verifyToken, upload, controllerUser.GET_USER);
  * Insertar usuarios
  */
 
-router.post("/usuario", verifyToken, upload, controllerUser.CREATE_USER);
+router.post("/usuario", verifyToken, upload, validatorUser(),controllerUser.CREATE_USER);
 
 /**
  * Modificar usuarios
  */
 
-router.put("/usuario/:id", verifyToken, upload, controllerUser.UPDATE_USER);
+router.put("/usuario/:id", verifyToken, upload, validatorUser(), controllerUser.UPDATE_USER);
 
 /**
  * Borrar usuarios
@@ -41,7 +42,7 @@ router.delete("/usuario/:id", controllerUser.DELETE_USER);
  * Modificar perfil
  */
 
-router.put("/perfil/:id", verifyToken, upload, controllerUser.UPDATE_PERFIL);
+router.put("/perfil", verifyToken, upload, controllerUser.UPDATE_PERFIL);
 
 /**
  * Cambiar la contraseña

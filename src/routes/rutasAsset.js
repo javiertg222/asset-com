@@ -8,13 +8,14 @@ const controllerAsset = require("../controllers/assetController");
 const { upload } = require("../middlewares/upload");
 //Middleware para verificar token
 const {verifyToken} = require("../middlewares/verifyToken")
+const {validatorAsset} = require("../validators/validator")
 
 //ASSET ENDPOINTS
 /**
  * Crear un activo
  */
 
-router.post("/activo", verifyToken, upload, controllerAsset.CREATE_ASSET);
+router.post("/activo", verifyToken, upload, validatorAsset(), controllerAsset.CREATE_ASSET);
 /**
  * Listar todos los activos
  */
@@ -26,7 +27,7 @@ router.get("/activo", controllerAsset.GET_ASSET);
 /**
  * Modificar un activo
  */
-router.put("/activo/:id", verifyToken, upload, controllerAsset.UPDATE_ASSET);
+router.put("/activo/:id", verifyToken, upload, validatorAsset(), controllerAsset.UPDATE_ASSET);
 
 router.delete("/activo/:id/:tipo", controllerAsset.DELETE_ASSET);
 

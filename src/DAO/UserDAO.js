@@ -6,6 +6,7 @@ const Perfil = require("../models/Perfil");
 const { deleteUploads } = require("../utils/deleteUploads");
 const { findEmail } = require("../utils/findEmail");
 const { createToken, decodeToken } = require("../utils/operateToken");
+const {validate} = require("../validators/validator")
 
 /**
  * Método para crear usuarios
@@ -15,6 +16,8 @@ const { createToken, decodeToken } = require("../utils/operateToken");
  */
 const createUser = async (req, res, next) => {
   try {
+    //Validamos los campos que vienen del formulario.
+    validate(req,res,next);
     const { nombre, apellido, apodo, email, password, rol, image } = req.body;
     const sql_usuario = `INSERT INTO usuarios(email,password,rol,fecha) VALUES($email,$password,$rol,datetime('now'))`;
     const usuario = new Usuario(email, await bcrypt.encrypt(password), rol);
@@ -88,6 +91,7 @@ const getUsers = async (req, res, next) => {
  */
 const updateUser = async (req, res, next) => {
   try {
+    validate(req,res,next);
     const { nombre, apellido, apodo, email, rol, image } = req.body;
     const id = Number(req.params.id);
 
@@ -176,15 +180,17 @@ const deleteUser = async (req, res, next) => {
  */
 const updatePerfil = async (req, res, next) => {
   try {
+    //Lo envía el middleware verifyToken
+    const user = req.user;
+    const id_usuario = Number(user.user.id);
     const { nombre, apellido, apodo, image } = req.body;
-    const id = Number(req.params.id);
     const perfil = new Perfil(nombre, apellido, apodo, image);
     let sql_perfil = "";
     let prf = {};
 
     //Evaluo si se cambia la imagen o se deja la misma
     if (req.file) {
-      sql_perfil = `UPDATE perfil SET nombre=$nombre, apellido=$apellido, apodo=$apodo,image=$image WHERE id_usuario=${id}`;
+      sql_perfil = `UPDATE perfil SET nombre=$nombre, apellido=$apellido, apodo=$apodo,image=$image WHERE id_usuario=${id_usuario}`;
 
       prf = {
         $nombre: perfil.nombre,
@@ -193,9 +199,9 @@ const updatePerfil = async (req, res, next) => {
         $image: `${process.env.URL}:${process.env.PORT}/public/${req.file.filename}`,
       };
       //Elimino la imagen del servidor
-      deleteUploads(id, "SELECT image FROM perfil WHERE id_usuario = ?");
+      deleteUploads(id_usuario, "SELECT image FROM perfil WHERE id_usuario = ?");
     } else {
-      sql_perfil = `UPDATE perfil SET nombre=$nombre, apellido=$apellido, apodo=$apodo WHERE id_usuario=${id}`;
+      sql_perfil = `UPDATE perfil SET nombre=$nombre, apellido=$apellido, apodo=$apodo WHERE id_usuario=${id_usuario}`;
       prf = {
         $nombre: perfil.nombre,
         $apellido: perfil.apellido,
@@ -208,7 +214,6 @@ const updatePerfil = async (req, res, next) => {
       message: "Perfil modificado con éxito!",
       perfil: perfil,
     });
- 
   } catch (error) {
     console.log(error.message);
   }

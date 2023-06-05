@@ -94,7 +94,7 @@ let db = new sqlite3.Database("./src/bbdd/assetcom.sqlite3", (error) => {
     )`);
 
     //Insertar los datos de la tabla etiqueta
-    // db.run(`INSERT INTO etiqueta('nombre') VALUES ('Informatica'), ('Hardware'),('Perifericos'),('Tecnologia'),('Comunicacion'),('Software')`);
+    //db.run(`INSERT INTO etiqueta('nombre') VALUES ('Informatica'), ('Hardware'),('Perifericos'),('Tecnologia'),('Comunicacion'),('Software')`);
     //Usuario de inicio por primera vez en la aplicación admin@admin.it/admin  a partir de este se pueden crear otros
     //db.run(`INSERT INTO usuarios(email,password,rol,fecha) VALUES('admin@admin.it','$2a$10$1WjvHshzeeH/rD1kqmGhHeuBQmi4utVWxv31F9Mstb7ElGBTPwzHq','admin',datetime('now'))`)
     //db.run(`INSERT INTO perfil(nombre, apellido, apodo, image, id_usuario) VALUES('admin', 'admin', 'admin','',(SELECT id FROM usuarios WHERE ROWID IN (SELECT max(ROWID) FROM usuarios)))`)

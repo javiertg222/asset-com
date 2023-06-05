@@ -24,7 +24,7 @@ app.use("/public", express.static(`${__dirname}/src/uploads`));
 
 //RUTA DE PRUEBA DEL SERVIDOR
 router.get("/", (req, res) =>(
-  res.status(200).json({ mensaje: "Ruta de prueba de la app" }))
+  res.status(200).json({ mensaje: "Ruta de prueba de la API" }))
 );
 
 //Usamos las rutas creadas

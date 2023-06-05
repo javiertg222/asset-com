@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Button, Container, Col, Form, Row } from "react-bootstrap";
+import { Button, Container, Col, Form, Row, Image } from "react-bootstrap";
 import AlertData from "../AlertData";
 import { getUser } from "../../utils/users";
+import imagenRota from "../../imagenes/person-circle.svg";
 
 function Perfil() {
   const [alerta, setAlerta] = useState(null);
@@ -33,12 +34,17 @@ function Perfil() {
     });
   };
 
+  const handleImageError = (e) => {
+    e.target.src = imagenRota;
+  };
+
   /**
    * Método para enviar el formulario
    * @param {evento} e
    * @param {usuario} user
    */
   function handleSubmitUser(user, e) {
+    const token = localStorage.getItem("token");
     //Previene al navegador recargar la página
     e.preventDefault();
 
@@ -47,10 +53,16 @@ function Perfil() {
     const formData = new FormData(form);
     formData.append("user", Object.entries(formData.entries()));
 
-    const url = `http://localhost:3001/perfil/${user.id}`;
+    const url = `http://localhost:3001/perfil`;
     const metodo = "PUT";
 
-    fetch(url, { method: metodo, body: formData })
+    fetch(url, {
+      method: metodo,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    })
       .then((res) => {
         if (res.ok) {
           console.log("Todo bien");
@@ -68,11 +80,12 @@ function Perfil() {
 
     // Limpiar campos
     e.target.reset();
+    setShow(true)
+
   }
   useEffect(() => {
     getUser("http://localhost:3001/usuario", setUser);
-  }, []);
-  console.log(user);
+  }, [show]);
 
   return (
     <>
@@ -90,7 +103,7 @@ function Perfil() {
         >
           <h3>Perfil:</h3>
           <Row className="mb-6">
-            <Form.Group as={Col} controlId="formGridName">
+            <Form.Group as={Col} sm={3} controlId="formGridName">
               <Form.Label>Nombre</Form.Label>
               <Form.Control
                 type="text"
@@ -109,7 +122,7 @@ function Perfil() {
                 {errors.nombre && errors.nombre.message}
               </span>
             </Form.Group>
-            <Form.Group as={Col} controlId="formGridApellido">
+            <Form.Group as={Col} sm={3} controlId="formGridApellido">
               <Form.Label>Apellido</Form.Label>
               <Form.Control
                 type="text"
@@ -128,7 +141,7 @@ function Perfil() {
                 {errors.apellido && errors.apellido.message}
               </span>
             </Form.Group>
-            <Form.Group as={Col} controlId="formGridNickName">
+            <Form.Group as={Col} sm={3} controlId="formGridNickName">
               <Form.Label>Apodo</Form.Label>
               <Form.Control
                 type="text"
@@ -148,8 +161,15 @@ function Perfil() {
               </span>
             </Form.Group>
           </Row>
-          <Form.Group controlId="formFileSm" as={Col} sm={5} className="mb-3">
-            <Form.Label>Foto</Form.Label>
+          <Form.Group controlId="formFileSm" as={Col} sm={3} className="mb-3">
+            <Image
+              title={`foto-${user.nombre}`}
+              src={user.image}
+              width={80}
+              height={90}
+              onError={handleImageError}
+              alt="foto-perfil"
+            />
             <Form.Control
               type="file"
               name="image"

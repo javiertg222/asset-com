@@ -2,6 +2,7 @@ const db = require("../../database");
 const Pc = require("../models/Pc");
 const Monitor = require("../models/Monitor");
 const { deleteUploads } = require("../utils/deleteUploads");
+const {validate} = require("../validators/validator")
 /**
  * Función para obtener todos los activos de la aplicación
  * @param {*} req
@@ -38,8 +39,10 @@ const getAsset = async (req, res, id) => {
  * @param {*} req
  * @param {*} res
  */
-const createAsset = async (req, res) => {
+const createAsset = async (req, res, next) => {
   try {
+     //Validamos los campos que vienen del formulario.
+     validate(req,res,next);
     //Lo envía el middleware verifyToken
     const user = req.user;
     const id_usuario = Number(user.user.id);
@@ -186,6 +189,8 @@ const createAsset = async (req, res) => {
  */
 const updateAsset = async (req, res, next) => {
   try {
+     //Validamos los campos que vienen del formulario.
+     validate(req,res,next);
     //Lo envía el middleware verifyToken
     const user = req.user;
     const id_usuario = Number(user.user.id);
