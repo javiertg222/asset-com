@@ -16,7 +16,7 @@ function AssetForm() {
    Recupero con el hook useLocation el activo enviado con useNavigate 
    */
   const { state } = useLocation();
-  //Constate para mensajes de alerta
+  //Constante para mensajes de alerta
   const [alerta, setAlerta] = useState(false);
   const [show, setShow] = useState(true);
 
@@ -27,6 +27,7 @@ function AssetForm() {
     formState: { errors },
     handleSubmit,
   } = useForm({ mode: "onChange" });
+  //Estado de los activos
   const [activos, setActivos] = useState({
     tipo: state != null ? state.assetData.tipo : "",
     nombre: state != null ? state.assetData.nombre : "",

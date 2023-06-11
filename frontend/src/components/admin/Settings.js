@@ -6,7 +6,9 @@ import { getConfiguration } from "../../utils/configuration";
 import decodeToken from "../../utils/decodeToken";
 
 function Settings() {
+  //Constante para mensajes de alerta
   const [alerta, setAlerta] = useState(false);
+  const [show, setShow] = useState(true);
   const [config, setConfig] = useState([]);
 
   //Contante para los datos(id) del usuario/token
@@ -63,13 +65,20 @@ function Settings() {
       //   "Content-Type": "multipart/form-data",
       // },
     })
-      .then((res) => {
-        if (res.status === 200) {
-          setAlerta(true);
-        }
-      })
-      .catch((error) => console.error(error));
-
+    .then((res) => {
+      if (res.ok) {
+        console.log("Todo bien");
+      } else {
+        console.log("Respuesta de red OK pero respuesta de HTTP no OK");
+      }
+      return res.json();
+    })
+    .then((data) => {
+      setAlerta(data);
+    })
+    .catch((error) =>
+      console.log("Hubo un problema con la petición Fetch:" + error.message)
+    );
     // Limpiar campos
     e.target.reset();
   };
@@ -80,11 +89,14 @@ function Settings() {
     const decode = decodeToken(token);
     setUser(decode.user.id);
     getConfiguration("http://localhost:3001/configuracion", setConfig);
-  }, [setConfig]);
+  }, []);
 
   return (
     <Container className="m-5">
-      {alerta && AlertData("Configuración añadida!", "success")}
+       {alerta?.message &&
+        show &&
+        AlertData(alerta?.message, "success", setShow)}
+      {alerta?.error && show && AlertData(alerta?.error, "danger", setShow)}
 
       <Form
         id="form-config"
